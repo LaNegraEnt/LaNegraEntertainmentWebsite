@@ -1,0 +1,98 @@
+name: Build & deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # volledige historie, nodig voor bestandstijden
+
+      - name: PHP syntaxcontrole
+        run: |
+          git ls-files -z '*.php' | xargs -0 -n1 php -l
+
+      - name: Controleer sitemap en robots
+        run: |
+          xmllint --noout sitemap.xml
+          test -f robots.txt
+
+      - name: Bestandstijden gelijkzetten aan laatste commit
+        # Zo uploadt lftp alleen bestanden die echt gewijzigd zijn.
+        run: |
+          git ls-files -z | while IFS= read -r -d '' f; do
+            touch -d "@$(git log -1 --format=%ct -- "$f")" "$f"
+          done
+
+      - name: Deploy-map samenstellen
+        # Alles wat niet op de server hoort blijft achter.
+        # lanegra-chat/config.php staat op de server met echte keys en mag niet overschreven worden.
+        run: |
+          mkdir dist
+          rsync -a ./ dist/ \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.DS_Store' \
+            --exclude 'readme.md' \
+            --exclude 'LEESMIJ.md' \
+            --exclude 'lanegra-chat/config.php' \
+            --exclude 'dist/'
+          echo "Bestanden in dist: $(find dist -type f | wc -l)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+
+      - name: lftp installeren
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: SSH host key en sleutel klaarzetten
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
+          SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          if [ -n "$SFTP_KNOWN_HOSTS" ]; then
+            echo "$SFTP_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "${SFTP_PORT:-22}" "$SFTP_HOST" > ~/.ssh/known_hosts
+          fi
+          if [ -n "$SFTP_PRIVATE_KEY" ]; then
+            echo "$SFTP_PRIVATE_KEY" > ~/.ssh/deploy_key
+            chmod 600 ~/.ssh/deploy_key
+          fi
+
+      - name: Upload via SFTP
+        # Geen --delete: bestanden die alleen op de server staan (data/, .htaccess,
+        # stuur-offerte.php, betaling-aanmaken-live.php, save-lead.php ...) blijven staan.
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
+        run: |
+          SSH_OPTS="-a -x -o StrictHostKeyChecking=yes"
+          [ -f ~/.ssh/deploy_key ] && SSH_OPTS="$SSH_OPTS -i $HOME/.ssh/deploy_key"
+          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-22}" "sftp://$SFTP_HOST" <<EOF
+          set sftp:connect-program "ssh $SSH_OPTS"
+          set net:max-retries 3
+          set net:timeout 30
+          mirror --reverse --parallel=4 --verbose dist/ "${SFTP_REMOTE_DIR:-public_html}"
+          bye
+          EOF
