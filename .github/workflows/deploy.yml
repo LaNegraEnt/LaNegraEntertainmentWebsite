@@ -16,7 +16,8 @@ concurrency:
 
 jobs:
   build-deploy:
-    runs-on: ubuntu-latest
+    # Vast op 24.04: ubuntu-latest schuift vanaf okt 2026 door naar Ubuntu 26 (andere lftp-versie)
+    runs-on: ubuntu-24.04
     environment: production
     env:
       SFTP_HOST: ${{ secrets.SFTP_HOST }}
@@ -98,7 +99,11 @@ jobs:
         # Lukt het uitlezen van de map niet, dan faalt deze stap in plaats van te gokken.
         run: |
           DIR="${SFTP_REMOTE_DIR:-public_html}/lanegra-chat"
-          LIST=$(lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" -e "cls -1a \"$DIR/\"; bye")
+          lftp --version | head -1
+          if ! LIST=$(lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" -e "cls -1a \"$DIR/\"; bye" 2>lftp-err.txt); then
+            echo "::error::FTP: kon $DIR niet uitlezen: $(tr '\n' ' ' < lftp-err.txt)"
+            exit 1
+          fi
           echo "Inhoud van $DIR:"; echo "$LIST"
           if echo "$LIST" | grep -qE '(^|/)config\.php$'; then
             echo "config.php staat al op de server, niet aangeraakt"
