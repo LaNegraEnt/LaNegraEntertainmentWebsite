@@ -29,10 +29,10 @@ jobs:
         with:
           fetch-depth: 0 # volledige historie, nodig om te bepalen wat er gewijzigd is
 
-      # Zelfde PHP-versie als de server (PHP/7.3), zodat 7.4+-syntax hier al faalt
+      # Zelfde PHP-versie als de server (PHP 8.3)
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.3'
+          php-version: '8.3'
 
       - name: PHP syntaxcontrole
         run: |

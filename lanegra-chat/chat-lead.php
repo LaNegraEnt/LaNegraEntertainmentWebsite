@@ -1,6 +1,6 @@
 <?php
 // Ontvangt een aanvraag uit de chat, mailt hem naar jou, stuurt de klant een bevestiging en bewaart een CSV-backup.
-// Let op: de server draait PHP 7.3, dus geen arrow functions (fn) of andere 7.4+-syntax gebruiken.
+// De server draait PHP 8.3; de pipeline controleert de syntax op dezelfde versie.
 require_once __DIR__ . '/_common.php';
 
 date_default_timezone_set('Europe/Amsterdam');
