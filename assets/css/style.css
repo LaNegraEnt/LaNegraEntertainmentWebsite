@@ -114,8 +114,9 @@ p { margin: 0; }
 .track { display: flex; width: max-content; animation: scroll 38s linear infinite; }
 .marquee:hover .track { animation-play-state: paused; }
 @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.client { flex: none; display: flex; align-items: center; justify-content: center; height: 72px; padding: 0 44px; font-size: 20px; font-weight: 700; color: #8A8C88; white-space: nowrap; }
-.client img { height: 34px; width: auto; filter: grayscale(1); opacity: .75; }
+.client { flex: none; display: flex; align-items: center; justify-content: center; height: 90px; padding: 0 36px; font-size: 20px; font-weight: 700; color: #8A8C88; white-space: nowrap; }
+.client img { height: 50px; width: auto; max-width: 190px; object-fit: contain; }
+.client img[src$=".jpg"] { border-radius: 8px; }
 .client-dark { background: var(--grey); border-radius: 12px; margin: 14px 0; height: 44px; padding: 0 22px; }
 .client-dark img { height: 24px; filter: none; opacity: 1; }
 
