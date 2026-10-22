@@ -93,6 +93,21 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      - name: config.php plaatsen als die nog niet op de server staat
+        # Een bestaande config.php (met echte sleutels) wordt nooit overschreven.
+        # Lukt het uitlezen van de map niet, dan faalt deze stap in plaats van te gokken.
+        run: |
+          DIR="${SFTP_REMOTE_DIR:-public_html}/lanegra-chat"
+          LIST=$(lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" -e "cls -1a \"$DIR/\"; bye")
+          echo "Inhoud van $DIR:"; echo "$LIST"
+          if echo "$LIST" | grep -qE '(^|/)config\.php$'; then
+            echo "config.php staat al op de server, niet aangeraakt"
+          else
+            echo "config.php ontbreekt op de server, standaardversie uit de repo wordt geplaatst"
+            lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" \
+              -e "put lanegra-chat/config.php -o \"$DIR/config.php\"; bye"
+          fi
+
       - name: Upload via FTP
         # Geen --delete: bestanden die alleen op de server staan (data/, .htaccess,
         # stuur-offerte.php, betaling-aanmaken-live.php, save-lead.php ...) blijven staan.
