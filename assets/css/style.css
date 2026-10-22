@@ -171,7 +171,7 @@ p { margin: 0; }
 .video iframe, .video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 84px; height: 84px; border-radius: 50%; border: 0; background: var(--sunglow); display: flex; align-items: center; justify-content: center; }
 .video-note { position: absolute; left: 18px; bottom: 16px; font-size: 13px; font-weight: 600; background: rgba(31,35,30,.8); color: #fff; padding: 6px 12px; border-radius: 999px; }
-.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; padding-top: 64px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; padding-top: 64px; }
 .fact { border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 6px; }
 .fact small { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--grey-3); }
 .fact strong { font-size: 17px; line-height: 1.4; }
