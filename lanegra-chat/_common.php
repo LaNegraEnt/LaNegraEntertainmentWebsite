@@ -39,7 +39,7 @@ function lnc_rate(string $bucket, int $max, int $window = 3600): bool {
     $f = $dir . '/' . $bucket . '_' . hash('sha256', lnc_ip()) . '.json';
     $now = time();
     $hits = is_file($f) ? (json_decode((string)@file_get_contents($f), true) ?: []) : [];
-    $hits = array_values(array_filter($hits, fn($t) => $t > $now - $window));
+    $hits = array_values(array_filter($hits, function ($t) use ($now, $window) { return $t > $now - $window; }));
     if (count($hits) >= $max) return false;
     $hits[] = $now;
     @file_put_contents($f, json_encode($hits), LOCK_EX);
