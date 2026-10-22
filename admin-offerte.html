@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Offerte op maat (intern) | La Negra Entertainment</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin">
+<header class="admin-top"><div class="wrap">
+  <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="La Negra Entertainment" width="640" height="326"></a>
+  <nav class="admin-nav"><a href="leads-overzicht.html">Leads</a><a href="offerte-rider.html">Offerte (klant)</a><span class="admin-badge">Alleen intern</span></nav>
+</div></header>
+<main class="wrap admin-main">
+  <div class="admin-intro">
+    <h1>Offerte op maat</h1>
+    <p>Vul de offerte in. Btw, totaal en restbetaling rekenen automatisch mee. Daarna maak je de akkoord-link, mail je de klant of kopieer je de HTML-mail.</p>
+  </div>
+  <div class="ao-grid">
+    <section class="admin-panel">
+      <h2 class="ao-h">Klant &amp; event</h2>
+      <div class="q-fields">
+        <div class="field"><label for="naam">Naam klant</label><input id="naam" placeholder="Bijv. Carmen Jansen"></div>
+        <div class="field"><label for="email">E-mail klant</label><input id="email" type="email" placeholder="naam@bedrijf.nl"></div>
+        <div class="field"><label for="telefoon">Telefoon klant</label><input id="telefoon" type="tel" placeholder="+31 6 …"></div>
+        <div class="field"><label for="datum">Datum event</label><input id="datum" type="date"></div>
+        <div class="field full"><label for="locatie">Locatie / plaats</label><input id="locatie" placeholder="Bijv. Utrecht"></div>
+      </div>
+
+      <h2 class="ao-h">Reiskosten</h2>
+      <div class="q-fields ao-travel">
+        <div class="field"><label for="tarief">Tarief per km (€)</label><input id="tarief" inputmode="decimal" placeholder="Bijv. 0,35"></div>
+        <div class="field"><label for="afstandKm">Afstand retour (km)</label><input id="afstandKm" inputmode="numeric" placeholder="Wordt berekend"></div>
+        <div class="field full"><button type="button" class="btn btn-ghost btn-sm" id="travelBtn">Bereken afstand vanaf Rotterdam</button><span class="small" id="travelMsg">Route via OpenStreetMap. Je kunt de km ook zelf invullen.</span></div>
+      </div>
+
+      <h2 class="ao-h">Entertainment</h2>
+      <p class="small" style="margin-bottom: 10px">Klik op een act om hem toe te voegen (omschrijving, prijs en toelichting tellen op).</p>
+      <div class="ao-acts"><button type="button" class="ao-act" data-act="samba"><b>Samba danseressen</b><span>€ 400,-</span><small>30 min show</small></button><button type="button" class="ao-act" data-act="brassband"><b>Brassband</b><span>€ 650,-</span><small>1 à 2 sets</small></button><button type="button" class="ao-act" data-act="salsaBrassband"><b>Salsa Brassband</b><span>€ 1.150,-</span><small>Live Latin band</small></button><button type="button" class="ao-act" data-act="latinBand"><b>Latin Ent. Band</b><span>€ 1.500,-</span><small>2 x 45 min</small></button><button type="button" class="ao-act" data-act="workshop"><b>Workshop</b><span>€ 200,-</span><small>1,5 uur</small></button><button type="button" class="ao-act" data-act="photobooth"><b>Photobooth</b><span>€ 450,-</span><small>Fotobeleving</small></button><button type="button" class="ao-act" data-act="dj"><b>DJ</b><span>€ 400,-</span><small>2,5 uur</small></button></div>
+      <div class="q-fields" style="margin-top: 16px">
+        <div class="field full"><label for="omschrijving">Omschrijving</label><textarea id="omschrijving" rows="3" placeholder="Bijv. Salsa Brassband + 3 samba danseressen + limboshow"></textarea></div>
+        <div class="field"><label for="subtotaal">Subtotaal excl. btw</label><input id="subtotaal" inputmode="decimal" placeholder="€ 1.250,00"></div>
+        <div class="field"><label for="reiskosten">Reiskosten excl. btw</label><input id="reiskosten" inputmode="decimal" placeholder="€ 75,00"></div>
+        <div class="field"><label for="btwPercentage">Btw</label><select id="btwPercentage"><option value="9" selected>9%</option><option value="21">21%</option><option value="0">0%</option></select></div>
+        <div class="field"><label for="aanbetaling">Aanbetaling incl. btw</label><input id="aanbetaling" inputmode="decimal" placeholder="€ 50,00"></div>
+        <div class="field full"><label for="extra">Extra info / toelichting</label><textarea id="extra" rows="4" placeholder="Bijv. 2 sets van 30 minuten, aankomst 60 min vooraf, kleedruimte gewenst"></textarea></div>
+      </div>
+      <button type="button" class="link ao-clear" id="clearBtn">Entertainment leegmaken</button>
+
+      <h2 class="ao-h">Instellingen</h2>
+      <div class="q-fields">
+        <div class="field"><label for="jouwmail">Jouw e-mail voor kopie</label><input id="jouwmail" value="info@lanegra-entertainment.nl"></div>
+        <div class="field"><label for="basisurl">Adres akkoordpagina</label><input id="basisurl" value="https://www.lanegra-entertainment.nl/opdrachtbevestiging-akkoord.html"></div>
+        <label class="ok-check full" style="margin: 0"><input type="checkbox" id="mailing_toestemming" checked><span>Klant mag op de mailinglijst.</span></label>
+      </div>
+    </section>
+
+    <aside class="ao-side">
+      <section class="q-sum-card">
+        <h2>Overzicht</h2>
+        <div class="sum-row"><span>Subtotaal + reiskosten</span><b id="pv-base">–</b></div>
+        <div class="sum-row"><span>Btw</span><b id="pv-btw">–</b></div>
+        <div class="sum-total"><span>Totaal incl. btw</span><b id="pv-totaal">–</b></div>
+        <div class="sum-row"><span>Aanbetaling</span><b id="pv-aan">–</b></div>
+        <div class="sum-row"><span>Restbetaling</span><b id="pv-rest">–</b></div>
+        <div class="ao-btns">
+          <button class="btn btn-yellow btn-sm" type="button" id="copyLink">Kopieer akkoord-link</button>
+          <button class="btn btn-yellow btn-sm" type="button" id="mailKlant">Mail naar klant</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="copyHtml">Kopieer HTML-mail</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="mailMij">Kopie naar mij</button>
+          <button class="btn btn-ghost btn-sm" type="button" id="saveLead">Lead opslaan</button>
+          <a class="btn btn-ghost btn-sm" id="openLink" href="#" target="_blank" rel="noopener">Open akkoordpagina</a>
+        </div>
+        <p class="ao-notice" id="notice" role="status" hidden></p>
+      </section>
+      <section class="admin-panel">
+        <h2 class="ao-h" style="margin-top: 0">Voorbeeld HTML-mail</h2>
+        <iframe class="ao-mail" id="mailPreview" title="Voorbeeld van de offertemail"></iframe>
+      </section>
+    </aside>
+  </div>
+</main>
+<script src="assets/js/admin-offerte.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Leads-overzicht | La Negra Entertainment</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin">
+<header class="admin-top"><div class="wrap">
+  <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="La Negra Entertainment" width="640" height="326"></a>
+  <span class="admin-badge">Leads-overzicht · alleen voor intern gebruik</span>
+</div></header>
+<main class="wrap admin-main">
+  <div class="admin-intro">
+    <h1>Alle aanvragen op één plek</h1>
+    <p>Aanvragen uit het oude websiteformulier en de offertetool (<code>data/leads.csv</code>), de mailinglijst (<code>data/mailinglijst.csv</code>) en, met je sleutel, de nieuwe aanvragen uit de chat en het contactformulier.</p>
+  </div>
+
+  <div class="admin-stats">
+    <div><small>Totaal leads</small><b id="stat-leads">0</b></div>
+    <div><small>Website / chat</small><b id="stat-web">0</b></div>
+    <div><small>Offertetool</small><b id="stat-admin">0</b></div>
+    <div><small>Mailinglijst</small><b id="stat-mailing">0</b></div>
+  </div>
+
+  <section class="admin-panel">
+    <div class="admin-head">
+      <h2>Leads</h2>
+      <div class="admin-actions">
+        <a class="btn btn-ghost btn-sm" href="data/leads.csv" target="_blank" rel="noopener">Open leads.csv</a>
+        <button class="btn btn-dark btn-sm" type="button" data-dl="leads">Download selectie</button>
+      </div>
+    </div>
+    <div class="admin-filters">
+      <input id="searchInput" type="search" placeholder="Zoek op naam, e-mail, telefoon, act of bericht…" aria-label="Zoeken">
+      <select id="sourceFilter" aria-label="Bron"><option value="">Alle bronnen</option><option value="website-formulier">Website (oud formulier)</option><option value="admin-offerte">Offertetool</option><option value="chat">Chat &amp; nieuw formulier</option></select>
+      <select id="mailingFilter" aria-label="Mailing"><option value="">Mailing: alles</option><option value="ja">Toestemming: ja</option><option value="nee">Toestemming: nee</option></select>
+      <select id="sortFilter" aria-label="Sorteren"><option value="nieuw">Nieuwste eerst</option><option value="oud">Oudste eerst</option></select>
+    </div>
+    <div class="admin-key">
+      <label for="keyInput">Sleutel voor chat-leads</label>
+      <input id="keyInput" type="password" autocomplete="off" placeholder="LNC_ADMIN_KEY uit lanegra-chat/config.php">
+      <button class="btn btn-ghost btn-sm" type="button" id="keyBtn">Laden</button>
+      <span id="keyMsg" class="small"></span>
+    </div>
+    <div class="table-scroll admin-table">
+      <table>
+        <thead><tr><th>Datum</th><th>Bron</th><th>Naam</th><th>E-mail</th><th>Telefoon</th><th>Event</th><th>Act</th><th>Datum event</th><th>Bericht</th><th>Mailing</th></tr></thead>
+        <tbody id="leadsBody"><tr><td colspan="10" class="small">Leads laden…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="admin-split">
+    <section class="admin-panel">
+      <div class="admin-head"><h2>Mailinglijst</h2><button class="btn btn-dark btn-sm" type="button" data-dl="mailing">Download</button></div>
+      <div class="admin-list" id="mailingList"><div class="admin-empty">Mailinglijst laden…</div></div>
+    </section>
+    <section class="admin-panel">
+      <h2>Goed om te weten</h2>
+      <div class="admin-list">
+        <div class="admin-item"><b>Leads opslaan</b><span>Aanvragen uit de offertetool komen in <code>data/leads.csv</code>. Chat en contactformulier slaan op in <code>lanegra-chat/data/leads.csv</code> (afgeschermd; alleen te zien met je sleutel).</span></div>
+        <div class="admin-item"><b>Mailinglijst</b><span>Alleen contacten met toestemming komen in <code>data/mailinglijst.csv</code>.</span></div>
+        <div class="admin-item"><b>Veilig werken</b><span>Zet deze pagina niet in je menu en deel de link niet. Bescherm bij voorkeur ook de map <code>data/</code> met een wachtwoord via je hostingpanel.</span></div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="assets/js/leads.js" defer></script>
+</body>
+</html>
