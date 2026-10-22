@@ -59,27 +59,10 @@ jobs:
       - name: lftp installeren
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: SSH host key en sleutel klaarzetten
-        env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST }}
-          SFTP_PORT: ${{ secrets.SFTP_PORT }}
-          SFTP_KNOWN_HOSTS: ${{ secrets.SFTP_KNOWN_HOSTS }}
-          SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          if [ -n "$SFTP_KNOWN_HOSTS" ]; then
-            echo "$SFTP_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          else
-            ssh-keyscan -p "${SFTP_PORT:-22}" "$SFTP_HOST" > ~/.ssh/known_hosts
-          fi
-          if [ -n "$SFTP_PRIVATE_KEY" ]; then
-            echo "$SFTP_PRIVATE_KEY" > ~/.ssh/deploy_key
-            chmod 600 ~/.ssh/deploy_key
-          fi
-
-      - name: Upload via SFTP
+      - name: Upload via FTP
         # Geen --delete: bestanden die alleen op de server staan (data/, .htaccess,
         # stuur-offerte.php, betaling-aanmaken-live.php, save-lead.php ...) blijven staan.
+        # ftp:ssl-allow: gebruikt FTPS (TLS) als de server dat ondersteunt, anders gewone FTP.
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_PORT: ${{ secrets.SFTP_PORT }}
@@ -87,10 +70,9 @@ jobs:
           SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
           SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
         run: |
-          SSH_OPTS="-a -x -o StrictHostKeyChecking=yes"
-          [ -f ~/.ssh/deploy_key ] && SSH_OPTS="$SSH_OPTS -i $HOME/.ssh/deploy_key"
-          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-22}" "sftp://$SFTP_HOST" <<EOF
-          set sftp:connect-program "ssh $SSH_OPTS"
+          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" <<EOF
+          set ftp:ssl-allow true
+          set ftp:passive-mode true
           set net:max-retries 3
           set net:timeout 30
           mirror --reverse --parallel=4 --verbose dist/ "${SFTP_REMOTE_DIR:-public_html}"
