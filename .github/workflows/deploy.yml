@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      volledig:
+        description: Alles opnieuw uploaden (niet alleen wijzigingen)
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-production
@@ -57,7 +62,10 @@ jobs:
         # lanegra-chat/config.php staat op de server met echte keys en mag niet overschreven worden.
         run: |
           PREV=$(cat prev-rev 2>/dev/null | tr -d '[:space:]')
-          if [ -n "$PREV" ] && git cat-file -e "$PREV^{commit}" 2>/dev/null; then
+          if [ "${{ inputs.volledig }}" = "true" ] || git log -1 --format=%B | grep -qF '[volledig]'; then
+            echo "Volledige upload gevraagd"
+            git ls-files > changed.txt
+          elif [ -n "$PREV" ] && git cat-file -e "$PREV^{commit}" 2>/dev/null; then
             echo "Vorige deploy: $PREV — alleen wijzigingen sinds die commit"
             git diff --name-only --diff-filter=ACMR "$PREV" HEAD > changed.txt
           else
