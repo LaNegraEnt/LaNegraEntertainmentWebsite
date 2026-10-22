@@ -24,7 +24,7 @@ jobs:
 
       - name: Controleer sitemap en robots
         run: |
-          xmllint --noout sitemap.xml
+          python3 -c 'import xml.etree.ElementTree as ET; ET.parse("sitemap.xml")'
           test -f robots.txt
 
       - name: Bestandstijden gelijkzetten aan laatste commit
