@@ -13,10 +13,16 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     environment: production
+    env:
+      SFTP_HOST: ${{ secrets.SFTP_HOST }}
+      SFTP_PORT: ${{ secrets.SFTP_PORT }}
+      SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+      SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+      SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # volledige historie, nodig voor bestandstijden
+          fetch-depth: 0 # volledige historie, nodig om te bepalen wat er gewijzigd is
 
       - name: PHP syntaxcontrole
         run: |
@@ -27,27 +33,44 @@ jobs:
           python3 -c 'import xml.etree.ElementTree as ET; ET.parse("sitemap.xml")'
           test -f robots.txt
 
-      - name: Bestandstijden gelijkzetten aan laatste commit
-        # Zo uploadt lftp alleen bestanden die echt gewijzigd zijn.
+      - name: lftp installeren en instellen
+        # ftp:ssl-allow: gebruikt FTPS (TLS) als de server dat ondersteunt, anders gewone FTP.
         run: |
-          git ls-files -z | while IFS= read -r -d '' f; do
-            touch -d "@$(git log -1 --format=%ct -- "$f")" "$f"
-          done
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          cat > ~/.lftprc <<'EOF'
+          set cmd:fail-exit yes
+          set ftp:ssl-allow true
+          set ssl:verify-certificate no
+          set ftp:passive-mode true
+          set net:max-retries 3
+          set net:timeout 30
+          EOF
 
-      - name: Deploy-map samenstellen
+      - name: Laatst gedeployde versie ophalen
+        # .deploy-rev op de server bevat de commit van de vorige deploy.
+        run: |
+          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" \
+            -e "get ${SFTP_REMOTE_DIR:-public_html}/.deploy-rev -o prev-rev; bye" || true
+
+      - name: Deploy-map samenstellen (alleen wijzigingen)
         # Alles wat niet op de server hoort blijft achter.
         # lanegra-chat/config.php staat op de server met echte keys en mag niet overschreven worden.
         run: |
+          PREV=$(cat prev-rev 2>/dev/null | tr -d '[:space:]')
+          if [ -n "$PREV" ] && git cat-file -e "$PREV^{commit}" 2>/dev/null; then
+            echo "Vorige deploy: $PREV — alleen wijzigingen sinds die commit"
+            git diff --name-only --diff-filter=ACMR "$PREV" HEAD > changed.txt
+          else
+            echo "Geen (geldige) vorige deploy gevonden — volledige upload"
+            git ls-files > changed.txt
+          fi
+
+          grep -v -E '^(\.github/|readme\.md$|LEESMIJ\.md$|lanegra-chat/config\.php$)|(^|/)\.DS_Store$' changed.txt > upload.txt || true
+
           mkdir dist
-          rsync -a ./ dist/ \
-            --exclude '.git/' \
-            --exclude '.github/' \
-            --exclude '.DS_Store' \
-            --exclude 'readme.md' \
-            --exclude 'LEESMIJ.md' \
-            --exclude 'lanegra-chat/config.php' \
-            --exclude 'dist/'
-          echo "Bestanden in dist: $(find dist -type f | wc -l)"
+          rsync -a --files-from=upload.txt ./ dist/
+          echo "Te uploaden: $(wc -l < upload.txt) bestand(en)"
+          cat upload.txt
 
       - uses: actions/upload-artifact@v4
         with:
@@ -55,27 +78,19 @@ jobs:
           path: dist/
           include-hidden-files: true
           retention-days: 7
-
-      - name: lftp installeren
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          if-no-files-found: ignore
 
       - name: Upload via FTP
         # Geen --delete: bestanden die alleen op de server staan (data/, .htaccess,
         # stuur-offerte.php, betaling-aanmaken-live.php, save-lead.php ...) blijven staan.
-        # ftp:ssl-allow: gebruikt FTPS (TLS) als de server dat ondersteunt, anders gewone FTP.
-        env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST }}
-          SFTP_PORT: ${{ secrets.SFTP_PORT }}
-          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
-          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
-          SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
+        # Daarna wordt .deploy-rev bijgewerkt, zodat de volgende run weet waar hij was.
         run: |
-          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" <<EOF
-          set ftp:ssl-allow true
-          set ssl:verify-certificate no
-          set ftp:passive-mode true
-          set net:max-retries 3
-          set net:timeout 30
-          mirror --reverse --parallel=4 --verbose dist/ "${SFTP_REMOTE_DIR:-public_html}"
-          bye
-          EOF
+          DIR="${SFTP_REMOTE_DIR:-public_html}"
+          echo "$GITHUB_SHA" > .deploy-rev
+          if [ -s upload.txt ]; then
+            MIRROR="mirror --reverse --parallel=4 --verbose dist/ \"$DIR\";"
+          else
+            echo "Geen gewijzigde bestanden om te uploaden"
+          fi
+          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" \
+            -e "$MIRROR put .deploy-rev -o \"$DIR/.deploy-rev\"; bye"
