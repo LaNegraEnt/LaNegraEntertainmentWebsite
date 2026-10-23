@@ -11,6 +11,15 @@ require_once __DIR__ . '/lanegra-chat/_mail.php';
 
 date_default_timezone_set('Europe/Amsterdam');
 
+// TIJDELIJK (diagnose na livegang): toon een fatale fout als JSON in plaats van een lege 500
+register_shutdown_function(function () {
+    $e = error_get_last();
+    if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        if (!headers_sent()) { http_response_code(500); header('Content-Type: application/json; charset=utf-8'); }
+        echo json_encode(['ok' => false, 'error' => 'fatal', 'detail' => preg_replace('#/[^ ]*/#', '', $e['message']) . ' @' . basename($e['file']) . ':' . $e['line']]);
+    }
+});
+
 // Vaste aanbetaling: wordt nooit uit de link of het formulier overgenomen
 const BK_AANBETALING = 50.00;
 
@@ -53,7 +62,11 @@ function bk_voornaam(string $naam): string {
 
 // ---------- Akkoord-link ondertekenen (zodat bedragen in de link niet ongemerkt te wijzigen zijn) ----------
 function bk_secret(): string {
-    return defined('LNE_LINK_SECRET') ? LNE_LINK_SECRET : hash('sha256', 'lne-akkoord-link|' . MOLLIE_API_KEY);
+    if (defined('LNE_LINK_SECRET')) return LNE_LINK_SECRET;
+    // Eenmalig aangemaakte geheime sleutel naast de orders (niet in GitHub)
+    $file = dirname(bk_orders_dir()) . '/link-secret.txt';
+    if (!is_file($file)) file_put_contents($file, bin2hex(random_bytes(32)), LOCK_EX);
+    return trim((string)file_get_contents($file));
 }
 
 function bk_sign(array $f): string {
