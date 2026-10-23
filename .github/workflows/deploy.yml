@@ -79,7 +79,7 @@ jobs:
             git ls-files > changed.txt
           fi
 
-          grep -v -E '^(\.github/|readme\.md$|LEESMIJ\.md$|lanegra-chat/config\.php$)|(^|/)\.DS_Store$' changed.txt > upload.txt || true
+          grep -v -E '^(\.github/|\.gitignore$|readme\.md$|LEESMIJ\.md$|lanegra-chat/config\.php$)|(^|/)\.DS_Store$' changed.txt > upload.txt || true
 
           mkdir dist
           rsync -a --files-from=upload.txt ./ dist/
@@ -127,3 +127,24 @@ jobs:
           fi
           lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" \
             -e "$MIRROR put .deploy-rev -o \"$DIR/.deploy-rev\"; bye"
+
+      - name: Revolut-sleutel op de server zetten
+        # Schrijft config-revolut.php (staat niet in de repo) met de secret REVOLUT_SECRET_KEY.
+        # Leeg secret = stap overslaan, een bestaand bestand op de server blijft dan staan.
+        env:
+          REVOLUT_SECRET_KEY: ${{ secrets.REVOLUT_SECRET_KEY }}
+          REVOLUT_SANDBOX: ${{ secrets.REVOLUT_SANDBOX }}
+        run: |
+          if [ -z "$REVOLUT_SECRET_KEY" ]; then echo "Geen REVOLUT_SECRET_KEY ingesteld, overgeslagen"; exit 0; fi
+          case "$REVOLUT_SECRET_KEY" in *[!A-Za-z0-9_-]*) echo "::error::REVOLUT_SECRET_KEY bevat ongeldige tekens"; exit 1;; esac
+          F="$RUNNER_TEMP/config-revolut.php"
+          {
+            echo "<?php"
+            echo "// Automatisch geplaatst door de deploy-pipeline (GitHub secret REVOLUT_SECRET_KEY). Niet handmatig wijzigen."
+            echo "if (!defined('REVOLUT_SECRET_KEY')) define('REVOLUT_SECRET_KEY', '$REVOLUT_SECRET_KEY');"
+            if [ "$REVOLUT_SANDBOX" = "true" ]; then echo "if (!defined('REVOLUT_SANDBOX')) define('REVOLUT_SANDBOX', true);"; fi
+          } > "$F"
+          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" \
+            -e "put \"$F\" -o \"${SFTP_REMOTE_DIR:-public_html}/config-revolut.php\"; bye"
+          rm -f "$F"
+          echo "config-revolut.php geplaatst$([ "$REVOLUT_SANDBOX" = "true" ] && echo ' (sandbox)')"

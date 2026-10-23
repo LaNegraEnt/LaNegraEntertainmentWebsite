@@ -7,6 +7,7 @@
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) { http_response_code(404); exit; }
 
 require_once __DIR__ . '/config.php';                // REVOLUT_SECRET_KEY – staat alleen op de server, niet in GitHub
+if (is_file(__DIR__ . '/config-revolut.php')) require_once __DIR__ . '/config-revolut.php';   // door de pipeline geplaatst uit het GitHub-secret
 require_once __DIR__ . '/lanegra-chat/config.php';   // LNC_MAIL_TO / LNC_MAIL_FROM
 require_once __DIR__ . '/lanegra-chat/_mail.php';
 
