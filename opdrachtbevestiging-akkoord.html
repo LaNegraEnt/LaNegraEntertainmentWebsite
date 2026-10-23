@@ -93,14 +93,15 @@
   function q(n) { var v = P.get(n); return v && v.trim() ? v : '-'; }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
   function row(k, v, big) { return '<div class="ok-row' + (big ? ' ok-total' : '') + '"><span>' + k + '</span><b>' + esc(v) + '</b></div>'; }
-  var aanbetaling = q('aanbetaling') === '-' ? '€ 50,-' : q('aanbetaling');
+  var aanbetaling = '€ 50,-';   // vast bedrag; de server rekent altijd € 50 af
   document.getElementById('overview-left').innerHTML =
     row('Naam', q('naam')) + row('E-mail', q('email')) + row('Telefoon', q('tel')) + row('Datum evenement', q('datum')) +
     row('Locatie', q('locatie')) + row('Pakket', q('pakket')) + row('Danseressen', q('danseressen')) + row('Extra acts', q('extras')) +
     row('Photobooth', q('photobooth')) + row('Opmerkingen', q('opmerking'));
   var right = row('Reiskosten', q('reiskosten')) + row('Subtotaal excl. btw', q('subtotaal')) + row('Btw (9%)', q('btw')) + row('Totaal incl. btw', q('totaal'), true) +
     row('Aanbetaling nu', aanbetaling);
-  if (q('restbetaling') !== '-') right += row('Restbetaling', q('restbetaling'));
+  var totaal = parseFloat(q('totaal').replace(/[^\d,]/g, '').replace(',', '.'));
+  if (totaal > 50) right += row('Restbetaling', '€ ' + (totaal - 50).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
   document.getElementById('overview-right').innerHTML = right;
 
   var akkoord = document.getElementById('akkoordCheck'), btn = document.getElementById('betaalBtn'), err = document.getElementById('betaalErr');
@@ -109,9 +110,8 @@
     if (btn.disabled) return;
     btn.disabled = true; err.hidden = true; btn.textContent = 'Betaling voorbereiden…';
     var fd = new FormData();
-    ['naam', 'email', 'tel', 'datum', 'locatie', 'pakket', 'danseressen', 'extras', 'photobooth', 'opmerking', 'reiskosten', 'subtotaal', 'btw', 'totaal', 'restbetaling']
+    ['naam', 'email', 'tel', 'datum', 'locatie', 'pakket', 'danseressen', 'extras', 'photobooth', 'opmerking', 'reiskosten', 'subtotaal', 'btw', 'totaal', 'sig']
       .forEach(function (k) { fd.append(k, q(k)); });
-    fd.append('aanbetaling', aanbetaling);
     try {
       var res = await fetch('betaling-aanmaken-live.php', { method: 'POST', body: fd });
       var data = await res.json();

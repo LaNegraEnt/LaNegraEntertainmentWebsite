@@ -47,8 +47,8 @@
 <section class="msg-page">
   <div class="wrap">
     <span class="msg-check" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1F231E" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>
-    <h1>Aanvraag verstuurd!</h1>
-    <p>Bedankt voor je aanvraag. We nemen zo snel mogelijk contact met je op om je evenement te bespreken.</p>
+    <h1 id="msg-title">Aanvraag verstuurd!</h1>
+    <p id="msg-text">Bedankt voor je aanvraag. We nemen zo snel mogelijk contact met je op om je evenement te bespreken.</p>
     <div class="actions" style="justify-content: center"><a class="btn btn-dark" href="index.html">Terug naar de site</a><a class="btn btn-ghost" href="https://wa.me/31625178050" rel="noopener" target="_blank">WhatsApp ons</a></div>
     <p class="msg-sub">Liever bellen? <a href="tel:+31625178050">+31 6 25 17 80 50</a></p>
   </div>
@@ -76,6 +76,35 @@
   <div class="footer-bottom"><div class="wrap">© 2026 La Negra Entertainment · KVK 67106951 · BTW NL002420332B84</div></div>
 </footer>
 <script src="assets/js/site.js" defer></script>
+<script>
+/* Terug van Mollie (?order_id=…): toon of de aanbetaling gelukt is */
+(function () {
+  var id = new URLSearchParams(location.search).get('order_id');
+  if (!id) return;
+  var t = document.getElementById('msg-title'), p = document.getElementById('msg-text');
+  t.textContent = 'Even geduld…'; p.textContent = 'We controleren je betaling.';
+  var pogingen = 0;
+  (function check() {
+    fetch('betaling-status.php?order_id=' + encodeURIComponent(id), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.ok && d.status === 'paid') {
+          t.textContent = 'Je boeking is bevestigd!';
+          p.textContent = 'We hebben je aanbetaling ontvangen. Je krijgt de definitieve bevestiging per mail. Tot op je feest!';
+        } else if (d.ok && d.status === 'failed') {
+          t.textContent = 'Betaling niet gelukt';
+          p.textContent = 'De aanbetaling is niet voltooid. Open de mail "We hebben je akkoord ontvangen" en klik op "Aanbetaling doen" om het opnieuw te proberen.';
+        } else if (++pogingen < 6) {
+          setTimeout(check, 2500);
+        } else {
+          t.textContent = 'Bedankt!';
+          p.textContent = 'Je betaling wordt nog verwerkt. Zodra die binnen is, krijg je de definitieve bevestiging per mail.';
+        }
+      })
+      .catch(function () { t.textContent = 'Bedankt!'; p.textContent = 'Je krijgt de bevestiging van je betaling per mail.'; });
+  })();
+})();
+</script>
 <script src="lanegra-chat/lanegra-chat.js" data-ai-url="lanegra-chat/ai-chat.php" defer></script>
 </body>
 </html>
