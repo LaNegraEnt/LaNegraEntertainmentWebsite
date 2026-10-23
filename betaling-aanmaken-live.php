@@ -5,6 +5,7 @@
 require __DIR__ . '/_boeking.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') bk_out(['ok' => false, 'message' => 'Method not allowed'], 405);
+if (!lnc_van_eigen_site()) bk_out(['ok' => false, 'message' => 'Niet toegestaan'], 403);
 if (!bk_rate('betaling', 10)) bk_out(['ok' => false, 'message' => 'Te veel pogingen. Probeer het over een uur opnieuw of mail ons via ' . LNC_MAIL_TO . '.'], 429);
 
 $o = [];

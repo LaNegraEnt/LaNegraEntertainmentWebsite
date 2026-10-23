@@ -9,6 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $p = $_POST;
+
+// Spam: niet vanaf de eigen site, lokveld ingevuld, of binnen 15 seconden verstuurd → stil negeren
+if (!lnc_van_eigen_site() || !empty($p['website']) || (int)($p['t'] ?? 0) < 15) {
+    lnc_spam_log('offerte', !lnc_van_eigen_site() ? 'herkomst' : (!empty($p['website']) ? 'lokveld' : 'te snel'), $p);
+    bk_out(['ok' => true]);
+}
 if (!bk_rate('offerte', 6)) bk_out(['ok' => false, 'message' => 'Te veel pogingen. Probeer het over een uur opnieuw of mail ons via ' . LNC_MAIL_TO . '.'], 429);
 
 // Extra acts: offerte.js stuurt "Ja (+€…)" of "Nee" per act, en de workshop als "Salsa, Percussie / 1.5 uur (+€…)"
@@ -39,6 +45,9 @@ $o = [
 if ($o['naam'] === '-' || !filter_var($o['email'], FILTER_VALIDATE_EMAIL) || $o['totaal'] === '-') {
     bk_out(['ok' => false, 'error' => 'Naam, e-mailadres of totaalbedrag ontbreekt.'], 422);
 }
+
+$spam = lnc_spam_reden(['naam' => $o['naam'], 'locatie' => $o['locatie'], 'opmerking' => $o['opmerking']]);
+if ($spam !== '') { lnc_spam_log('offerte', $spam, $o); bk_out(['ok' => true]); }
 
 $link = bk_akkoord_link($o);
 $datum = bk_datum($o['datum']);

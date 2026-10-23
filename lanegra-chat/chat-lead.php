@@ -14,7 +14,7 @@ $L = $viaJs ? $in['lead'] : $in;
 
 // Spam-checks: honeypot (altijd) + te snel ingevuld (alleen als de JS de tijd meestuurt)
 $honeypot = !empty($in['website']) || !empty($L['website']);
-$teSnel   = isset($in['t']) && (int)$in['t'] < 8;
+$teSnel   = (int)($in['t'] ?? 0) < 8;   // chat en formulier sturen altijd mee hoe lang de bezoeker bezig was
 if ($honeypot || $teSnel) lnc_out(['ok' => true]); // stil negeren
 if (!lnc_rate('lead', 5)) lnc_out(['ok' => false, 'error' => 'Je hebt al meerdere aanvragen verstuurd. Mail ons gerust direct via ' . LNC_MAIL_TO . '.'], 429);
 $f = [
@@ -32,6 +32,10 @@ $f = [
 if ($f['Naam'] === '' || !filter_var($f['E-mail'], FILTER_VALIDATE_EMAIL)) {
     lnc_out(['ok' => false, 'error' => 'Naam of e-mailadres ontbreekt of klopt niet.'], 422);
 }
+
+require_once __DIR__ . '/_mail.php';
+$spam = lnc_spam_reden(['naam' => $f['Naam'], 'plaats' => $f['Plaats'], 'opmerking' => $f['Opmerking']]);
+if ($spam !== '') { lnc_spam_log('chat/formulier', $spam, $f); lnc_out(['ok' => true]); }   // stil negeren
 
 // Datum uit het formulier (2027-06-14) leesbaar maken (14-06-2027)
 if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $f['Datum'], $d)) $f['Datum'] = $d[3] . '-' . $d[2] . '-' . $d[1];

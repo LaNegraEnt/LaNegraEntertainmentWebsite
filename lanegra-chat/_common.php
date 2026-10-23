@@ -16,7 +16,7 @@ function lnc_guard(): array {
     // Alleen eigen domein
     $origin = $_SERVER['HTTP_ORIGIN'] ?? ($_SERVER['HTTP_REFERER'] ?? '');
     $host = $origin ? parse_url($origin, PHP_URL_HOST) : '';
-    if ($host && !in_array(strtolower($host), LNC_ALLOWED_HOSTS, true)) {
+    if (!$host || !in_array(strtolower($host), LNC_ALLOWED_HOSTS, true)) {
         lnc_out(['ok' => false, 'error' => 'Niet toegestaan'], 403);
     }
 

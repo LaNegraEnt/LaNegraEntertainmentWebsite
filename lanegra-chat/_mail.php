@@ -85,3 +85,34 @@ function lnc_mail(string $to, string $subject, string $html, string $text, strin
     if ($replyTo) $headers[] = 'Reply-To: ' . $replyTo;
     return @mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $body, implode("\r\n", $headers), '-f' . LNC_MAIL_FROM);
 }
+
+// ---------- Spamfilter (gedeeld door chat, aanvraagformulier en offerte) ----------
+
+/** Geeft een reden terug als de tekst op spam lijkt, anders ''. */
+function lnc_spam_reden(array $velden): string {
+    $tekst = implode("\n", array_map('strval', $velden));
+    if (preg_match_all('#https?://|www\.|\[url|<a\s#i', $tekst) >= 2) return 'links';
+    if (preg_match('/[\p{Cyrillic}\p{Han}\p{Hangul}\p{Thai}\p{Arabic}]/u', $tekst)) return 'schrift';
+    if (preg_match('/\b(seo|backlinks?|crypto|bitcoin|casino|viagra|cialis|porn|forex|loan|ranking|google (first|top) page|web ?design services?|guest post|whatsapp marketing|lead generation)\b/i', $tekst)) return 'woorden';
+    $naam = (string)($velden['naam'] ?? '');
+    if ($naam !== '' && preg_match('#https?://|www\.|\.(com|ru|xyz|top)\b|\d{5,}#i', $naam)) return 'naam';
+    return '';
+}
+
+/** Bewaart afgewezen spam in een afgeschermd logbestand, zodat een echte klant nooit stilletjes verdwijnt. */
+function lnc_spam_log(string $bron, string $reden, array $velden): void {
+    $dir = defined('LNC_DATA_DIR') ? LNC_DATA_DIR : __DIR__ . '/data';
+    if (!is_dir($dir)) @mkdir($dir, 0750, true);
+    if (!is_file($dir . '/.htaccess')) @file_put_contents($dir . '/.htaccess', "Require all denied\nDeny from all\n");
+    if ($fh = @fopen($dir . '/spam-log.csv', 'a')) {
+        fputcsv($fh, [date('Y-m-d H:i'), $bron, $reden, $_SERVER['REMOTE_ADDR'] ?? '', json_encode($velden, JSON_UNESCAPED_UNICODE)]);
+        fclose($fh);
+    }
+}
+
+/** Komt het verzoek van de eigen website? (Browsers sturen bij POST altijd Origin of Referer mee.) */
+function lnc_van_eigen_site(): bool {
+    $bron = $_SERVER['HTTP_ORIGIN'] ?? ($_SERVER['HTTP_REFERER'] ?? '');
+    $host = strtolower((string)parse_url($bron, PHP_URL_HOST));
+    return in_array($host, ['lanegra-entertainment.nl', 'www.lanegra-entertainment.nl'], true);
+}

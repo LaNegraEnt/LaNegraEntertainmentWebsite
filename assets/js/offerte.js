@@ -57,6 +57,7 @@
   form.addEventListener('input', render);
   render();
 
+  var geladen = Date.now();
   var btn = $('offerte-btn'), err = $('form-err'), ok = $('offerte-success');
   function fail(msg, el) {
     err.textContent = msg; err.hidden = false;
@@ -93,6 +94,8 @@
     d.append('subtotaal_excl_btw', euro(c.sub));
     d.append('btw_9pct', euro(c.btw));
     d.append('totaal_incl_btw', euro(c.totaal));
+    d.append('website', val('f-web'));                                   // lokveld voor bots
+    d.append('t', String(Math.round((Date.now() - geladen) / 1000)));   // seconden op de pagina
     d.append('_subject', 'Boeking: ' + (naam + ' ' + lnaam).trim() + ' — ' + datum);
 
     btn.disabled = true; btn.textContent = 'Bezig met versturen…';
