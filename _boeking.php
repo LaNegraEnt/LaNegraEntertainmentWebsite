@@ -13,14 +13,6 @@ require_once __DIR__ . '/lanegra-chat/_mail.php';
 
 date_default_timezone_set('Europe/Amsterdam');
 
-// TIJDELIJK (diagnose na livegang): toon een fatale fout als JSON in plaats van een lege 500
-register_shutdown_function(function () {
-    $e = error_get_last();
-    if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
-        if (!headers_sent()) { http_response_code(500); header('Content-Type: application/json; charset=utf-8'); }
-        echo json_encode(['ok' => false, 'error' => 'fatal', 'detail' => preg_replace('#/[^ ]*/#', '', $e['message']) . ' @' . basename($e['file']) . ':' . $e['line']]);
-    }
-});
 
 // Vaste aanbetaling: wordt nooit uit de link of het formulier overgenomen
 const BK_AANBETALING = 50.00;
