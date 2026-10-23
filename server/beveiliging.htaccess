@@ -27,6 +27,11 @@
   Require all denied
 </FilesMatch>
 
+# Oude bestanden van eerdere versies: blijven op de server staan, maar zijn uitgezet
+<FilesMatch "^(bereken-reiskosten\.php|bevestigings-mail\.html|brassband-huren-la-negra-style\.html|config\.php|hero1\.mp4|hero2\.mp4|hero_bottom\.mp4|hero_carousel_1\.mp4|hero_carousel_2\.mp4|lanegra-v2\.html|lanegra-v3\.html|offerte-mail\.html|offerte-mail-fixed\.html|offerte-rider-correct-order\.html|offerte-rider-fixed\.html|opdrachtbevestiging\.html|opdrachtbevestiging-akkoord-styled\.html|opdrachtbevestiging-mollie-auto\.html|stuur-mail\.php|stuur-mail-FIXED\.php|save-lead-SECURE\.php|betaling-aanmaken-live-SECURE\.php|mollie-webhook-live-SECURE\.php|stuur-definitieve-bevestiging-handmatig\.php|init-leads-storage\.php)$">
+  Require all denied
+</FilesMatch>
+
 # De opruim-service-worker altijd vers ophalen
 <Files "sw.js">
   <IfModule mod_headers.c>
