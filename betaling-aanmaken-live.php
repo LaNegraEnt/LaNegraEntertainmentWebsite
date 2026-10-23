@@ -5,6 +5,7 @@
 require __DIR__ . '/_boeking.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') bk_out(['ok' => false, 'message' => 'Method not allowed'], 405);
+if (!bk_rate('betaling', 10)) bk_out(['ok' => false, 'message' => 'Te veel pogingen. Probeer het over een uur opnieuw of mail ons via ' . LNC_MAIL_TO . '.'], 429);
 
 $o = [];
 foreach (BK_LINK_FIELDS as $k) $o[$k] = bk_clean($_POST[$k] ?? '', in_array($k, ['opmerking', 'extras'], true) ? 2000 : 300);

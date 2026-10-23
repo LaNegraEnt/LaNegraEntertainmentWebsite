@@ -54,6 +54,20 @@ function bk_voornaam(string $naam): string {
     return explode(' ', trim($naam))[0] ?? '';
 }
 
+// ---------- Misbruik beperken: max. aantal verzoeken per bezoeker (IP) per uur ----------
+function bk_rate(string $bucket, int $max): bool {
+    $dir = dirname(bk_orders_dir()) . '/rate';
+    if (!is_dir($dir)) @mkdir($dir, 0750, true);
+    $f = $dir . '/' . $bucket . '_' . hash('sha256', $_SERVER['REMOTE_ADDR'] ?? '') . '.json';
+    $nu = time();
+    $hits = is_file($f) ? (json_decode((string)@file_get_contents($f), true) ?: []) : [];
+    $hits = array_values(array_filter($hits, function ($t) use ($nu) { return $t > $nu - 3600; }));
+    if (count($hits) >= $max) return false;
+    $hits[] = $nu;
+    @file_put_contents($f, json_encode($hits), LOCK_EX);
+    return true;
+}
+
 // ---------- Akkoord-link ondertekenen (zodat bedragen in de link niet ongemerkt te wijzigen zijn) ----------
 function bk_secret(): string {
     if (defined('LNE_LINK_SECRET')) return LNE_LINK_SECRET;

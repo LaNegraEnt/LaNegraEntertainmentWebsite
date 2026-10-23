@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $p = $_POST;
+if (!bk_rate('offerte', 6)) bk_out(['ok' => false, 'message' => 'Te veel pogingen. Probeer het over een uur opnieuw of mail ons via ' . LNC_MAIL_TO . '.'], 429);
 
 // Extra acts: offerte.js stuurt "Ja (+€…)" of "Nee" per act, en de workshop als "Salsa, Percussie / 1.5 uur (+€…)"
 $extras = [];

@@ -79,7 +79,7 @@ jobs:
             git ls-files > changed.txt
           fi
 
-          grep -v -E '^(\.github/|\.gitignore$|readme\.md$|LEESMIJ\.md$|lanegra-chat/config\.php$)|(^|/)\.DS_Store$' changed.txt > upload.txt || true
+          grep -v -E '^(\.github/|server/|\.gitignore$|readme\.md$|LEESMIJ\.md$|lanegra-chat/config\.php$)|(^|/)\.DS_Store$' changed.txt > upload.txt || true
 
           mkdir dist
           rsync -a --files-from=upload.txt ./ dist/
@@ -148,3 +148,52 @@ jobs:
             -e "put \"$F\" -o \"${SFTP_REMOTE_DIR:-public_html}/config-revolut.php\"; bye"
           rm -f "$F"
           echo "config-revolut.php geplaatst$([ "$REVOLUT_SANDBOX" = "true" ] && echo ' (sandbox)')"
+
+      - name: Beveiligingsregels in .htaccess zetten
+        # Voegt server/beveiliging.htaccess toe aan de bestaande .htaccess (doorverwijzingen blijven staan),
+        # bewaart een reservekopie als .htaccess-backup en zet die terug als de site daarna niet goed laadt.
+        # Met secret ADMIN_WACHTWOORD komen admin-offerte.html, leads-overzicht.html en save-lead.php
+        # achter een wachtwoord (gebruikersnaam: beheer).
+        env:
+          ADMIN_WACHTWOORD: ${{ secrets.ADMIN_WACHTWOORD }}
+          SITE: https://lanegra-entertainment.nl
+        run: |
+          DIR="${SFTP_REMOTE_DIR:-public_html}"
+          ftp() { lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" -e "$1; bye"; }
+
+          # Bestaande .htaccess ophalen; mislukt dat terwijl hij wel bestaat, dan niets aanraken
+          if ftp "cls -1a \"$DIR/\"" | grep -qE '(^|/)\.htaccess$'; then
+            ftp "get \"$DIR/.htaccess\" -o htaccess.server"
+          else
+            : > htaccess.server
+          fi
+
+          HTPASSWD=""
+          if [ -n "$ADMIN_WACHTWOORD" ]; then
+            # Absoluut pad van de webmap bepalen via een tijdelijk script (direct weer verwijderd)
+            T="pad-$(openssl rand -hex 12).php"
+            echo '<?php echo __DIR__;' > "$T"
+            ftp "put \"$T\" -o \"$DIR/$T\""
+            ABS=$(curl -fsS "$SITE/$T" || true)
+            ftp "rm \"$DIR/$T\"" || true
+            case "$ABS" in /*) ;; *) echo "::error::Kon het pad van de webmap niet bepalen"; exit 1;; esac
+            printf 'beheer:%s\n' "$(openssl passwd -apr1 "$ADMIN_WACHTWOORD")" > htpasswd-beheer
+            ftp "put htpasswd-beheer -o \"$DIR/.htpasswd-beheer\""
+            HTPASSWD="$ABS/.htpasswd-beheer"
+            rm -f htpasswd-beheer
+          fi
+
+          python3 .github/scripts/htaccess-merge.py htaccess.server server/beveiliging.htaccess "$HTPASSWD" > htaccess.nieuw
+          if cmp -s htaccess.server htaccess.nieuw; then echo ".htaccess is al up-to-date"; exit 0; fi
+
+          ftp "put htaccess.server -o \"$DIR/.htaccess-backup\"; put htaccess.nieuw -o \"$DIR/.htaccess\""
+          sleep 3
+          for u in / /index.html /acts/brassband.html /offerte-rider.html /lanegra-chat/lanegra-chat.js /assets/css/style.css; do
+            c=$(curl -s -o /dev/null -w '%{http_code}' "$SITE$u")
+            if [ "$c" != "200" ]; then
+              echo "::error::$u gaf $c met de nieuwe .htaccess – oude versie teruggezet"
+              ftp "put htaccess.server -o \"$DIR/.htaccess\""
+              exit 1
+            fi
+          done
+          echo "Beveiligingsregels actief"

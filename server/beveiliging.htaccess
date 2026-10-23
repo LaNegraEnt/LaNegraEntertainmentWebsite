@@ -1,0 +1,38 @@
+# BEGIN La Negra beveiliging – beheerd door de deploy-pipeline (server/beveiliging.htaccess), niet hier wijzigen
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+</IfModule>
+
+# Verborgen bestanden (.DS_Store, .deploy-rev, .git, .htpasswd-…) nooit uitserveren
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Gegevens, back-ups, broncode en notities nooit uitserveren
+<FilesMatch "(?i)\.(csv|json|lock|log|bak|old|orig|sql|zip|tar|gz|rar|7z|sh|ini|env|rtf|md|dist)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "(?i)^(readme.*|.*checklist.*|.*-\.htaccess)$">
+  Require all denied
+</FilesMatch>
+
+# Oude/losse scripts die niet meer gebruikt worden
+<FilesMatch "(?i)^(.*-(secure|fixed)\.php|stuur-mail.*\.php|stuur-definitieve-bevestiging-handmatig\.php|init-leads-storage\.php|config-revolut\.php|_boeking\.php)$">
+  Require all denied
+</FilesMatch>
+
+# De opruim-service-worker altijd vers ophalen
+<Files "sw.js">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </IfModule>
+</Files>
+
+# {{BEHEER_AUTH}}
+# END La Negra beveiliging
