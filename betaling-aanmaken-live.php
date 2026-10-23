@@ -57,7 +57,8 @@ try {
     if ($pointer && !$herhaling) file_put_contents($pointer, $orderId);
 } catch (Throwable $e) {
     error_log('betaling-aanmaken-live.php: ' . $e->getMessage());
-    bk_out(['ok' => false, 'message' => 'Betaling aanmaken mislukt'], 500);
+    $geenSleutel = strpos($e->getMessage(), 'MOLLIE_API_KEY') === 0;
+    bk_out(['ok' => false, 'message' => $geenSleutel ? 'Betalen is tijdelijk niet mogelijk (Mollie nog niet ingesteld)' : 'Betaling aanmaken mislukt'], 500);
 }
 
 // ---------- Akkoordmails (mislukt mailen houdt de betaling niet tegen) ----------

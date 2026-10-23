@@ -183,6 +183,8 @@ function bk_template(string $file, array $vars): ?string {
     if (!is_file($path)) return null;
     $map = [];
     foreach ($vars as $k => $v) $map['{{' . $k . '}}'] = lnc_e($v);
+    // Logo als ingesloten afbeelding (Outlook blokkeert afbeeldingen van de website)
+    $map[LNC_SITE . '/assets/img/logo.png'] = 'cid:' . LNC_LOGO_CID;
     return strtr((string)file_get_contents($path), $map);
 }
 
