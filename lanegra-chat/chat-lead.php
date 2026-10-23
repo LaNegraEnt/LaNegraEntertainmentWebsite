@@ -210,6 +210,7 @@ if (LNC_SEND_AUTOREPLY) {
             'q' => 'Vragen of iets vergeten? Beantwoord gewoon deze mail of bel ons op',
             'bye' => 'Muzikale groet,',
             'btn' => 'Bekijk onze acts',
+            'offerte' => 'Stel je offerte samen', 'offerte_txt' => 'Weet je al wat je wilt? Stel direct je offerte samen: kies je act en extra\'s en je ziet meteen het totaalbedrag.',
             'foot' => 'Je ontvangt deze mail omdat je een aanvraag deed op lanegra-entertainment.nl.',
         ],
         'en' => [
@@ -223,6 +224,7 @@ if (LNC_SEND_AUTOREPLY) {
             'q' => 'Questions or forgot something? Simply reply to this email or call us at',
             'bye' => 'Musical greetings,',
             'btn' => 'View our acts',
+            'offerte' => 'Build your quote', 'offerte_txt' => 'Already know what you want? Build your quote right away: choose your act and extras and see the total straight away.',
             'foot' => 'You are receiving this email because you sent a request via lanegra-entertainment.nl.',
         ],
         'es' => [
@@ -236,6 +238,7 @@ if (LNC_SEND_AUTOREPLY) {
             'q' => '¿Preguntas o se te olvidó algo? Responde a este correo o llámanos al',
             'bye' => 'Un saludo musical,',
             'btn' => 'Ver nuestros actos',
+            'offerte' => 'Crea tu presupuesto', 'offerte_txt' => '¿Ya sabes lo que quieres? Crea tu presupuesto ahora: elige tu acto y extras y verás el total al instante.',
             'foot' => 'Recibes este correo porque enviaste una solicitud en lanegra-entertainment.nl.',
         ],
     ];
@@ -262,7 +265,8 @@ if (LNC_SEND_AUTOREPLY) {
           . '<div style="font-size:18px;font-weight:bold;margin:8px 0 6px">' . lnc_e($t['next']) . '</div>'
           . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px">' . $stappen . '</table>'
           . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px">' . lnc_e($t['q']) . ' <a href="tel:+31625178050" style="color:#D74B27;font-weight:bold;text-decoration:none">' . LNC_PHONE . '</a>.</p>'
-          . '<div style="margin:0 0 20px">' . lnc_mail_button($actsUrl, $t['btn'], true) . '</div>'
+          . '<p style="font-size:15px;line-height:1.6;margin:0 0 12px">' . lnc_e($t['offerte_txt']) . '</p>'
+          . '<div style="margin:0 0 20px">' . lnc_mail_button(LNC_SITE . '/offerte-rider.html', $t['offerte'], true) . lnc_mail_button($actsUrl, $t['btn'], false) . '</div>'
           . '<p style="font-size:15px;line-height:1.6;margin:0 0 20px">' . lnc_e($t['bye']) . '<br><b>La Negra Entertainment</b><br>'
           . '<span style="color:#8A8C88;font-size:13px">Feel the Rhythm. Live the Experience.</span></p>';
 
@@ -275,6 +279,7 @@ if (LNC_SEND_AUTOREPLY) {
     foreach ($t['labels'] as $i => $label) if ($waarden[$i] !== '') $text .= $label . ': ' . $waarden[$i] . "\n";
     $text .= "\n" . $t['next'] . "\n";
     foreach ($t['steps'] as $i => $stap) $text .= ($i + 1) . '. ' . $stap . "\n";
+    $text .= "\n" . $t['offerte_txt'] . "\n" . LNC_SITE . "/offerte-rider.html\n";
     $text .= "\n" . $t['q'] . ' ' . LNC_PHONE . ".\n\n" . $t['bye'] . "\nLa Negra Entertainment\n" . LNC_SITE . "\n";
 
     lnc_mail($f['E-mail'], $t['subject'], lnc_mail_layout($t['title'], $body, $footer), $text, LNC_MAIL_TO);
