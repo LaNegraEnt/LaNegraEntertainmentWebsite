@@ -1,11 +1,12 @@
 <?php
 // Gedeelde functies voor de boekingsflow:
 //   offerte-rider.html → stuur-offerte.php → opdrachtbevestiging-akkoord.html
-//   → betaling-aanmaken-live.php (akkoordmails + Mollie) → mollie-webhook-live.php (definitieve bevestiging)
+//   → betaling-aanmaken-live.php (akkoordmails + Revolut-betaling)
+//   → revolut-webhook.php / betaling-status.php (definitieve bevestiging via bk_verwerk_betaling)
 // Dit bestand wordt alleen ge-include; direct openen geeft 404.
 if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) { http_response_code(404); exit; }
 
-require_once __DIR__ . '/config.php';                // MOLLIE_API_KEY – staat alleen op de server, niet in GitHub
+require_once __DIR__ . '/config.php';                // REVOLUT_SECRET_KEY – staat alleen op de server, niet in GitHub
 require_once __DIR__ . '/lanegra-chat/config.php';   // LNC_MAIL_TO / LNC_MAIL_FROM
 require_once __DIR__ . '/lanegra-chat/_mail.php';
 
@@ -113,15 +114,27 @@ function bk_save_order(array $o): void {
     file_put_contents(bk_order_file($o['order_id']), json_encode($o, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
-// ---------- Mollie (rechtstreeks via de API, geen vendor/-map nodig) ----------
-function bk_mollie(string $method, string $path, ?array $body = null): array {
-    if (!defined('MOLLIE_API_KEY') || MOLLIE_API_KEY === '') throw new RuntimeException('MOLLIE_API_KEY ontbreekt in config.php');
-    $ch = curl_init('https://api.mollie.com/v2/' . ltrim($path, '/'));
+// ---------- Revolut Business (Merchant API) ----------
+// In config.php op de server: const REVOLUT_SECRET_KEY = 'sk_...';  (optioneel: const REVOLUT_SANDBOX = true;)
+const BK_REVOLUT_API_VERSION = '2024-09-01';
+
+function bk_revolut_base(): string {
+    return defined('REVOLUT_SANDBOX') && REVOLUT_SANDBOX ? 'https://sandbox-merchant.revolut.com' : 'https://merchant.revolut.com';
+}
+
+function bk_revolut(string $method, string $path, ?array $body = null): array {
+    if (!defined('REVOLUT_SECRET_KEY') || REVOLUT_SECRET_KEY === '') throw new RuntimeException('REVOLUT_SECRET_KEY ontbreekt in config.php');
+    $ch = curl_init(bk_revolut_base() . '/' . ltrim($path, '/'));
     curl_setopt_array($ch, [
         CURLOPT_CUSTOMREQUEST  => $method,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT        => 20,
-        CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . MOLLIE_API_KEY, 'Content-Type: application/json'],
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . REVOLUT_SECRET_KEY,
+            'Revolut-Api-Version: ' . BK_REVOLUT_API_VERSION,
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ],
     ]);
     if ($body !== null) curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body, JSON_UNESCAPED_UNICODE));
     $res  = curl_exec($ch);
@@ -130,9 +143,49 @@ function bk_mollie(string $method, string $path, ?array $body = null): array {
     curl_close($ch);
     $data = json_decode((string)$res, true);
     if ($res === false || $code < 200 || $code >= 300 || !is_array($data)) {
-        throw new RuntimeException('Mollie ' . $method . ' ' . $path . ' → ' . $code . ' ' . ($err ?: ($data['detail'] ?? substr((string)$res, 0, 200))));
+        throw new RuntimeException('Revolut ' . $method . ' ' . $path . ' → ' . $code . ' ' . ($err ?: substr((string)$res, 0, 300)));
     }
     return $data;
+}
+
+/**
+ * Haalt de actuele status van de betaling op bij Revolut (de bron van waarheid) en verstuurt
+ * bij een geslaagde betaling precies één keer de definitieve bevestiging. Geeft de bijgewerkte order terug.
+ */
+function bk_verwerk_betaling(array $o): array {
+    if (empty($o['revolut_order_id'])) return $o;
+    $state = strtolower((string)(bk_revolut('GET', 'api/orders/' . rawurlencode($o['revolut_order_id']))['state'] ?? ''));
+    $o['revolut_state'] = $state;
+    $o['updated_at'] = date('c');
+    if ($state === 'completed') {
+        $o['status'] = 'paid';
+        $o['paid_at'] = $o['paid_at'] ?? date('c');
+    } elseif (($o['status'] ?? '') !== 'paid' && in_array($state, ['failed', 'cancelled'], true)) {
+        $o['status'] = 'failed';
+    }
+    bk_save_order($o);
+    if ($o['status'] === 'paid' && empty($o['bevestiging_verstuurd'])) {
+        $o['bevestiging_verstuurd'] = date('c');   // eerst vastleggen, zodat gelijktijdige aanroepen niet dubbel mailen
+        bk_save_order($o);
+        bk_mail_bevestiging($o);
+    }
+    return $o;
+}
+
+/** Eenmalig de webhook bij Revolut aanmelden (best effort; betaling-status.php vangt het ook op zonder webhook). */
+function bk_revolut_webhook_aanmelden(): void {
+    $flag = dirname(bk_orders_dir()) . '/revolut-webhook.json';
+    if (is_file($flag)) return;
+    $url = LNC_SITE . '/revolut-webhook.php';
+    foreach (['api/1.0/webhooks', 'api/webhooks'] as $path) {
+        try {
+            $res = bk_revolut('POST', $path, ['url' => $url, 'events' => ['ORDER_COMPLETED', 'ORDER_PAYMENT_FAILED', 'ORDER_CANCELLED']]);
+            file_put_contents($flag, json_encode(['path' => $path, 'id' => $res['id'] ?? null, 'at' => date('c')]), LOCK_EX);
+            return;
+        } catch (Throwable $e) {
+            error_log('Revolut webhook aanmelden via ' . $path . ': ' . $e->getMessage());
+        }
+    }
 }
 
 // ---------- Mailblokken ----------
@@ -195,4 +248,28 @@ function bk_agenda_link(array $o): string {
         . '&dates=' . gmdate('Ymd\THis\Z', $start) . '/' . gmdate('Ymd\THis\Z', $start + 3 * 3600)
         . '&location=' . rawurlencode($o['locatie'])
         . '&details=' . rawurlencode("Pakket: {$o['pakket']}\nTotaal: {$o['totaal']}\nKlant: {$o['naam']} ({$o['email']}, {$o['tel']})");
+}
+
+/** Definitieve bevestiging na ontvangen aanbetaling: klant (sjabloon) en jij. */
+function bk_mail_bevestiging(array $o): void {
+    $datum = bk_datum($o['datum']);
+
+    $html = bk_template('definitieve-opdrachtbevestiging-mail.html', [
+        'AANHEF' => 'Hoi ' . bk_voornaam($o['naam']) . ',', 'NAAM' => $o['naam'], 'DATUM' => $datum, 'LOCATIE' => $o['locatie'],
+        'PAKKET' => $o['pakket'], 'REISKOSTEN' => $o['reiskosten'], 'TOTAAL' => $o['totaal'],
+        'AANBETALING' => $o['aanbetaling'], 'RESTBETALING' => $o['restbetaling'],
+    ]) ?? lnc_mail_layout('Je boeking is bevestigd', bk_boeking_card($o, 'Je boeking') . bk_bedragen_card($o, true), bk_footer_klant());
+    $klantOk = lnc_mail($o['email'], 'Je boeking is definitief bevestigd – La Negra Entertainment', $html,
+        "Hoi " . bk_voornaam($o['naam']) . ",\n\nWe hebben je aanbetaling van {$o['aanbetaling']} ontvangen. Je boeking voor $datum is definitief vastgelegd.\n"
+        . "Pakket: {$o['pakket']}\nLocatie: {$o['locatie']}\nTotaal incl. btw: {$o['totaal']}\nRestbetaling: {$o['restbetaling']}\n\nMuzikale groet,\nLa Negra Entertainment\n", LNC_MAIL_TO);
+
+    $body = '<div style="font-size:26px;font-weight:bold;line-height:1.25;margin:0 0 4px">Aanbetaling ontvangen</div>'
+          . '<div style="font-size:14px;color:#8A8C88;margin:0 0 20px">Order ' . lnc_e($o['order_id']) . ' &middot; Revolut ' . lnc_e($o['revolut_order_id'] ?? '') . '</div>'
+          . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px">De boeking van ' . lnc_e($o['naam']) . ' is definitief. '
+          . ($klantOk ? 'De klant heeft de definitieve bevestiging per mail ontvangen.' : '<b>Let op:</b> de bevestigingsmail naar de klant kon niet worden verstuurd.') . '</p>'
+          . bk_contact_card($o) . bk_boeking_card($o, 'De boeking') . bk_bedragen_card($o, true)
+          . '<div style="margin:0 0 20px">' . lnc_mail_button(bk_agenda_link($o), 'Zet in agenda', true) . '</div>';
+    lnc_mail(LNC_MAIL_TO, 'Aanbetaling ontvangen: ' . $o['naam'] . ' – ' . $datum,
+        lnc_mail_layout('Aanbetaling ontvangen van ' . $o['naam'], $body, 'Order ' . lnc_e($o['order_id'])),
+        "Aanbetaling van {$o['aanbetaling']} ontvangen van {$o['naam']} ({$o['email']}) voor $datum.\nOrder: {$o['order_id']}\n", $o['email']);
 }

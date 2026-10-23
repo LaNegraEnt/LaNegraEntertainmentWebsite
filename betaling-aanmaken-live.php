@@ -1,7 +1,7 @@
 <?php
 // Aangeroepen door opdrachtbevestiging-akkoord.html zodra de klant akkoord geeft:
-// slaat de order op, maakt de Mollie-betaling van € 50 aan, mailt jou en de klant het akkoord
-// en geeft de Mollie-betaalpagina terug.
+// slaat de order op, maakt de Revolut-betaling van € 50 aan, mailt jou en de klant het akkoord
+// en geeft de Revolut-betaalpagina terug.
 require __DIR__ . '/_boeking.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') bk_out(['ok' => false, 'message' => 'Method not allowed'], 405);
@@ -43,22 +43,34 @@ if ($vorige) {
 $orderId = $o['order_id'];
 
 try {
-    $payment = bk_mollie('POST', 'payments', [
-        'amount'      => ['currency' => 'EUR', 'value' => number_format(BK_AANBETALING, 2, '.', '')],
-        'description' => 'Aanbetaling La Negra Entertainment ' . $orderId,
-        'redirectUrl' => LNC_SITE . '/bedankt.html?order_id=' . rawurlencode($orderId),
-        'webhookUrl'  => LNC_SITE . '/mollie-webhook-live.php',
-        'metadata'    => ['order_id' => $orderId],
+    // Herhaalpoging: nog openstaande Revolut-betaling hergebruiken
+    if ($herhaling && !empty($o['revolut_order_id'])) {
+        $o = bk_verwerk_betaling($o);
+        if ($o['status'] === 'paid') bk_out(['ok' => false, 'message' => 'De aanbetaling voor deze boeking is al ontvangen'], 409);
+        if (in_array($o['revolut_state'] ?? '', ['pending', 'processing'], true) && !empty($o['checkout_url'])) {
+            bk_out(['ok' => true, 'order_id' => $orderId, 'checkout_url' => $o['checkout_url']]);
+        }
+    }
+    $order = bk_revolut('POST', 'api/orders', [
+        'amount'              => (int)round(BK_AANBETALING * 100),   // in centen
+        'currency'            => 'EUR',
+        'description'         => 'Aanbetaling La Negra Entertainment ' . $orderId,
+        'redirect_url'        => LNC_SITE . '/bedankt.html?order_id=' . rawurlencode($orderId),
+        'merchant_order_data' => ['reference' => $orderId],
+        'customer'            => ['email' => $o['email']],
     ]);
-    $o['payment_id']   = $payment['id'];
-    $o['checkout_url'] = $payment['_links']['checkout']['href'] ?? '';
-    $o['status']       = 'payment_created';
+    if (empty($order['id']) || empty($order['checkout_url'])) throw new RuntimeException('Revolut gaf geen order-id of betaallink terug');
+    $o['revolut_order_id'] = $order['id'];
+    $o['revolut_state']    = strtolower((string)($order['state'] ?? 'pending'));
+    $o['checkout_url']     = $order['checkout_url'];
+    $o['status']           = 'payment_created';
     bk_save_order($o);
     if ($pointer && !$herhaling) file_put_contents($pointer, $orderId);
+    bk_revolut_webhook_aanmelden();
 } catch (Throwable $e) {
     error_log('betaling-aanmaken-live.php: ' . $e->getMessage());
-    $geenSleutel = strpos($e->getMessage(), 'MOLLIE_API_KEY') === 0;
-    bk_out(['ok' => false, 'message' => $geenSleutel ? 'Betalen is tijdelijk niet mogelijk (Mollie nog niet ingesteld)' : 'Betaling aanmaken mislukt'], 500);
+    $geenSleutel = strpos($e->getMessage(), 'REVOLUT_SECRET_KEY') === 0;
+    bk_out(['ok' => false, 'message' => $geenSleutel ? 'Betalen is tijdelijk niet mogelijk (Revolut nog niet ingesteld)' : 'Betaling aanmaken mislukt'], 500);
 }
 
 // ---------- Akkoordmails (mislukt mailen houdt de betaling niet tegen) ----------
