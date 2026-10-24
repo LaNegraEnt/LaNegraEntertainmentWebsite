@@ -11,10 +11,15 @@
     ['extra-dj', 'DJ — 2,5 uur', 400]
   ];
 
-  function euro(n) { return '€ ' + Math.round(Number(n) || 0).toLocaleString('nl-NL') + ',-'; }
+  function euro(n) {
+    var c = Math.round((Number(n) || 0) * 100);
+    return c % 100 ? '€ ' + (c / 100).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '€ ' + (c / 100).toLocaleString('nl-NL') + ',-';
+  }
   function num(id) { var el = $(id); return el && el.value !== '' ? (parseFloat(String(el.value).replace(',', '.')) || 0) : 0; }
   function checked(name) { return form.querySelector('input[name="' + name + '"]:checked'); }
   function val(id) { return ($(id).value || '').trim(); }
+
+  var KM_TARIEF = 0.23;   // € per km
 
   function calc() {
     var pk = checked('pakket'), d = checked('danseressen'), pb = checked('photobooth'), huur = checked('pb-huur');
@@ -24,8 +29,9 @@
       dans: d ? d.value : '0', dansPrijs: d ? parseInt(d.dataset.dansPrijs, 10) || 0 : 0,
       pb: pb ? pb.value : 'Geen', huur: huur ? huur.value : '2 uur',
       ws: Array.prototype.map.call(form.querySelectorAll('.workshop-type:checked'), function (w) { return w.value; }),
-      km: num('f-km'), reis: num('f-reiskosten')
+      km: Math.max(0, Math.round(num('f-km')))
     };
+    c.reis = Math.round(c.km * KM_TARIEF * 100) / 100;   // reiskosten altijd berekend, nooit zelf in te vullen
     EXTRAS.forEach(function (x) {
       var on = $(x[0]).checked; c.flags[x[0]] = on;
       if (on) { c.extras.push(x[1] + ' (+' + euro(x[2]) + ')'); c.extrasPrijs += x[2]; }
@@ -48,6 +54,7 @@
     set('sum-workshop', c.ws.length ? c.ws.join(', ') + ' — 1,5 uur' : 'Geen');
     set('sum-km', c.km ? c.km + ' km' : 'Nog niet ingevuld');
     set('sum-reis', euro(c.reis));
+    var rk = $('f-reiskosten'); if (rk) rk.value = c.km ? euro(c.reis) : '';
     set('sum-sub', euro(c.sub));
     set('sum-btw', euro(c.btw));
     set('sum-total', euro(c.totaal));

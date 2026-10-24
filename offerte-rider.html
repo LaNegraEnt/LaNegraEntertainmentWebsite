@@ -49,6 +49,7 @@
     <span class="kicker">Offerte</span>
     <h1>Stel je pakket samen</h1>
     <p>Kies wat je wilt, zie direct een prijsindicatie en stuur je keuze vrijblijvend door. Prijzen zijn exclusief 9% btw en reiskosten.</p>
+    <div class="av-callout" style="max-width: 720px"><p><b>Iets anders in gedachten?</b> Staat jouw wens er niet tussen, of wil je een andere combinatie? Mail naar <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a> of bel <a href="tel:+31625178050">+31 6 25 17 80 50</a>, dan maken we een offerte op maat.</p></div>
   </div>
 </section>
 <div class="wrap q-layout" id="offerte">
@@ -76,7 +77,7 @@
       <div class="opt-grid opt-grid-sm" style="margin-top: 18px"><label class="opt opt-sm"><input type="radio" name="photobooth" value="Geen" checked><span class="opt-box"><b>Geen</b></span></label><label class="opt opt-sm"><input type="radio" name="photobooth" value="Basic"><span class="opt-box"><b>Basic</b></span></label><label class="opt opt-sm"><input type="radio" name="photobooth" value="Silver"><span class="opt-box"><b>Silver</b></span></label><label class="opt opt-sm"><input type="radio" name="photobooth" value="Exclusive"><span class="opt-box"><b>Exclusive</b></span></label></div><div class="tags" style="margin-top: 14px"><span class="tags-label">Huurduur</span><label class="tag"><input type="radio" name="pb-huur" value="2 uur" checked><span>2 uur</span></label><label class="tag"><input type="radio" name="pb-huur" value="4 uur"><span>4 uur</span></label></div></section>
 <section class="q-step" aria-labelledby="stap6"><h2 id="stap6"><span class="q-nr">6</span>Reiskosten</h2><div class="q-fields">
         <div class="field"><label for="f-km">Afstand in km</label><input type="number" id="f-km" min="0" step="1" placeholder="Bijv. 80" inputmode="numeric"></div>
-        <div class="field"><label for="f-reiskosten">Reiskosten excl. btw (€)</label><input type="number" id="f-reiskosten" min="0" step="1" placeholder="Bijv. 40" inputmode="numeric"></div>
+        <div class="field"><label for="f-reiskosten">Reiskosten excl. btw (€ 0,23 per km)</label><input type="text" id="f-reiskosten" readonly tabindex="-1" placeholder="Wordt berekend" aria-live="polite"></div>
       </div><p class="q-note">Weet je dit nog niet? Laat het leeg, dan rekenen we het voor je uit.</p></section>
 <section class="q-step" aria-labelledby="stap7"><h2 id="stap7"><span class="q-nr">7</span>Je gegevens</h2><div class="q-fields">
         <div class="field"><label for="f-naam">Voornaam <span>*</span></label><input id="f-naam" autocomplete="given-name" required maxlength="80"></div>
@@ -97,6 +98,7 @@
       <div class="sum-total"><span>Totaal incl. btw</span><b id="sum-total">–</b></div>
       <p class="sum-note">Dit is een indicatie op basis van je keuzes. Je ontvangt altijd een definitieve offerte.</p>
       <button class="btn btn-yellow" type="button" id="offerte-btn">Keuze doorgeven</button>
+      <p class="form-note" style="margin-top: 10px">Iets anders? Mail <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a> of bel <a href="tel:+31625178050">+31 6 25 17 80 50</a>.</p>
       <p class="form-msg err" id="form-err" role="alert" hidden></p>
       <div class="q-success" id="offerte-success" role="status" hidden><b>Aanvraag verstuurd!</b> Bedankt, we nemen zo snel mogelijk contact met je op.</div>
     </div>

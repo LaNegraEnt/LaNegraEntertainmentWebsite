@@ -91,7 +91,7 @@ $body = '<div style="font-size:26px;font-weight:bold;line-height:1.25;margin:0 0
       . '<div style="margin:0 0 20px">' . lnc_mail_button(bk_agenda_link($o), 'Zet in agenda', true) . '</div>';
 lnc_mail(LNC_MAIL_TO, 'Akkoord ontvangen: ' . $o['naam'] . ' – ' . $datum,
     lnc_mail_layout('Akkoord van ' . $o['naam'], $body, 'Order ' . lnc_e($orderId) . ($verified ? '' : ' &middot; link niet geverifieerd')),
-    "Akkoord ontvangen van {$o['naam']} ({$o['email']}) voor $datum.\nPakket: {$o['pakket']}\nTotaal: {$o['totaal']}\nOrder: $orderId\n", $o['email']);
+    "Akkoord ontvangen van {$o['naam']} ({$o['email']}) voor $datum.\nPakket: {$o['pakket']}\nTotaal: {$o['totaal']}\nOrder: $orderId\n", $o['email'], 'Akkoord via website');
 
 $body = '<div style="font-size:15px;color:#8A8C88;margin:0 0 4px">Hoi ' . lnc_e(bk_voornaam($o['naam'])) . ',</div>'
       . '<div style="font-size:26px;font-weight:bold;line-height:1.25;margin:0 0 10px">We hebben je akkoord ontvangen</div>'

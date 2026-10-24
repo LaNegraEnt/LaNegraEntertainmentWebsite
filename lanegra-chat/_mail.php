@@ -48,7 +48,11 @@ function lnc_mail_button(string $href, string $label, bool $primary): string {
 }
 
 /** Verstuurt een HTML-mail met platte-tekstversie (beter voor spamfilters) en het logo ingesloten. */
-function lnc_mail(string $to, string $subject, string $html, string $text, string $replyTo = ''): bool {
+// Meldingen aan jezelf komen van een apart adres, anders tonen mailapps ze als "Note to Self"
+const LNC_MAIL_WEBSITE = 'website@lanegra-entertainment.nl';
+
+/** $vanNaam gezet = melding aan jezelf: afzender wordt "$vanNaam" <website@…> in plaats van info@. */
+function lnc_mail(string $to, string $subject, string $html, string $text, string $replyTo = '', string $vanNaam = ''): bool {
     $alt = 'lnc_alt_' . bin2hex(random_bytes(8));
     $alternative = '--' . $alt . "\r\n"
           . "Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
@@ -76,7 +80,9 @@ function lnc_mail(string $to, string $subject, string $html, string $text, strin
         $body = $alternative;
     }
 
-    $from = '=?UTF-8?B?' . base64_encode(LNC_MAIL_FROM_NAME) . '?= <' . LNC_MAIL_FROM . '>';
+    $from = $vanNaam !== ''
+        ? '=?UTF-8?B?' . base64_encode($vanNaam) . '?= <' . LNC_MAIL_WEBSITE . '>'
+        : '=?UTF-8?B?' . base64_encode(LNC_MAIL_FROM_NAME) . '?= <' . LNC_MAIL_FROM . '>';
     $headers = [
         'MIME-Version: 1.0',
         'Content-Type: ' . $contentType,

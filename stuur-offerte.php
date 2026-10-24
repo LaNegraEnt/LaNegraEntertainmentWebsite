@@ -63,7 +63,7 @@ foreach ($o as $k => $v) $text .= ucfirst($k) . ": $v\n";
 $text .= "\nOpdrachtbevestiging: $link\n";
 
 $sent = lnc_mail(LNC_MAIL_TO, 'Nieuwe offerte: ' . $o['naam'] . ' – ' . $datum,
-    lnc_mail_layout('Nieuwe offerte van ' . $o['naam'], $body, 'Beantwoord deze mail om direct de klant te mailen.'), $text, $o['email']);
+    lnc_mail_layout('Nieuwe offerte van ' . $o['naam'], $body, 'Beantwoord deze mail om direct de klant te mailen.'), $text, $o['email'], 'Nieuwe offerte via website');
 
 // ---------- Mail naar de klant (sjabloon opdracht-mail.html) ----------
 $vars = [

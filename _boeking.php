@@ -278,5 +278,5 @@ function bk_mail_bevestiging(array $o): void {
           . '<div style="margin:0 0 20px">' . lnc_mail_button(bk_agenda_link($o), 'Zet in agenda', true) . '</div>';
     lnc_mail(LNC_MAIL_TO, 'Aanbetaling ontvangen: ' . $o['naam'] . ' – ' . $datum,
         lnc_mail_layout('Aanbetaling ontvangen van ' . $o['naam'], $body, 'Order ' . lnc_e($o['order_id'])),
-        "Aanbetaling van {$o['aanbetaling']} ontvangen van {$o['naam']} ({$o['email']}) voor $datum.\nOrder: {$o['order_id']}\n", $o['email']);
+        "Aanbetaling van {$o['aanbetaling']} ontvangen van {$o['naam']} ({$o['email']}) voor $datum.\nOrder: {$o['order_id']}\n", $o['email'], 'Aanbetaling via website');
 }

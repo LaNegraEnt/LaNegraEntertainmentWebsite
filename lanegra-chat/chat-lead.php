@@ -115,7 +115,7 @@ if ($viaChat) {
 }
 
 $subject = 'Nieuwe aanvraag: ' . implode(' – ', array_filter([$f['Type event'], $f['Datum'], $f['Naam']], 'strlen'));
-$sent = lnc_mail(LNC_MAIL_TO, $subject, $html, $text, $f['E-mail']);
+$sent = lnc_mail(LNC_MAIL_TO, $subject, $html, $text, $f['E-mail'], 'Nieuwe aanvraag via website');
 
 // ---------- Bevestiging naar klant ----------
 if (LNC_SEND_AUTOREPLY) {
@@ -127,11 +127,11 @@ if (LNC_SEND_AUTOREPLY) {
             'card' => 'Jouw aanvraag',
             'labels' => ['Soort event', 'Act', 'Datum', 'Plaats', 'Gasten', 'Opmerking'],
             'next' => 'Wat gebeurt er nu?',
-            'steps' => ['We checken de beschikbaarheid op jouw datum.', 'Je ontvangt zo snel mogelijk een offerte op maat.', 'Na je akkoord leggen we alles vast. Daarna: ¡fiesta!'],
-            'q' => 'Vragen of iets vergeten? Beantwoord gewoon deze mail of bel ons op',
+            'steps' => ['Stel via de knop hieronder je offerte samen: kies je act en extra\'s en je ziet direct het totaalbedrag.', 'Je ontvangt je opdrachtbevestiging per mail. Klopt alles? Geef akkoord en betaal de aanbetaling van € 50,-.', 'Je datum staat definitief vast. Daarna: ¡fiesta!'],
+            'q' => 'Iets anders in gedachten, of staat jouw wens er niet tussen? Dan maken we graag een offerte op maat. Mail naar', 'q_of' => 'of bel',
             'bye' => 'Muzikale groet,',
             'btn' => 'Bekijk onze acts',
-            'offerte' => 'Stel je offerte samen', 'offerte_txt' => 'Weet je al wat je wilt? Stel direct je offerte samen: kies je act en extra\'s en je ziet meteen het totaalbedrag.',
+            'offerte' => 'Stel je offerte samen',
             'foot' => 'Je ontvangt deze mail omdat je een aanvraag deed op lanegra-entertainment.nl.',
         ],
         'en' => [
@@ -141,11 +141,11 @@ if (LNC_SEND_AUTOREPLY) {
             'card' => 'Your request',
             'labels' => ['Type of event', 'Act', 'Date', 'Location', 'Guests', 'Message'],
             'next' => 'What happens next?',
-            'steps' => ['We check availability on your date.', 'You will receive a tailor-made quote as soon as possible.', 'Once you agree, we confirm everything. Then: ¡fiesta!'],
-            'q' => 'Questions or forgot something? Simply reply to this email or call us at',
+            'steps' => ['Build your quote using the button below: choose your act and extras and see the total straight away.', 'You will receive your booking confirmation by email. All correct? Give your approval and pay the € 50 deposit.', 'Your date is confirmed. Then: ¡fiesta!'],
+            'q' => 'Have something else in mind, or is what you want not listed? We are happy to make a custom quote. Email', 'q_of' => 'or call',
             'bye' => 'Musical greetings,',
             'btn' => 'View our acts',
-            'offerte' => 'Build your quote', 'offerte_txt' => 'Already know what you want? Build your quote right away: choose your act and extras and see the total straight away.',
+            'offerte' => 'Build your quote',
             'foot' => 'You are receiving this email because you sent a request via lanegra-entertainment.nl.',
         ],
         'es' => [
@@ -155,11 +155,11 @@ if (LNC_SEND_AUTOREPLY) {
             'card' => 'Tu solicitud',
             'labels' => ['Tipo de evento', 'Acto', 'Fecha', 'Lugar', 'Invitados', 'Mensaje'],
             'next' => '¿Qué pasa ahora?',
-            'steps' => ['Comprobamos la disponibilidad en tu fecha.', 'Recibirás un presupuesto a medida lo antes posible.', 'Con tu visto bueno lo dejamos todo confirmado. Y luego: ¡fiesta!'],
-            'q' => '¿Preguntas o se te olvidó algo? Responde a este correo o llámanos al',
+            'steps' => ['Crea tu presupuesto con el botón de abajo: elige tu acto y extras y verás el total al instante.', 'Recibirás la confirmación de tu reserva por correo. ¿Todo correcto? Da tu aprobación y paga el anticipo de 50 €.', 'Tu fecha queda confirmada. Y luego: ¡fiesta!'],
+            'q' => '¿Tienes otra idea o no encuentras lo que buscas? Te hacemos un presupuesto a medida. Escribe a', 'q_of' => 'o llama al',
             'bye' => 'Un saludo musical,',
             'btn' => 'Ver nuestros actos',
-            'offerte' => 'Crea tu presupuesto', 'offerte_txt' => '¿Ya sabes lo que quieres? Crea tu presupuesto ahora: elige tu acto y extras y verás el total al instante.',
+            'offerte' => 'Crea tu presupuesto',
             'foot' => 'Recibes este correo porque enviaste una solicitud en lanegra-entertainment.nl.',
         ],
     ];
@@ -185,9 +185,10 @@ if (LNC_SEND_AUTOREPLY) {
           . lnc_mail_card($t['card'], $kaart)
           . '<div style="font-size:18px;font-weight:bold;margin:8px 0 6px">' . lnc_e($t['next']) . '</div>'
           . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px">' . $stappen . '</table>'
-          . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px">' . lnc_e($t['q']) . ' <a href="tel:+31625178050" style="color:#D74B27;font-weight:bold;text-decoration:none">' . LNC_PHONE . '</a>.</p>'
-          . '<p style="font-size:15px;line-height:1.6;margin:0 0 12px">' . lnc_e($t['offerte_txt']) . '</p>'
           . '<div style="margin:0 0 20px">' . lnc_mail_button(LNC_SITE . '/offerte-rider.html', $t['offerte'], true) . lnc_mail_button($actsUrl, $t['btn'], false) . '</div>'
+          . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px;padding:12px 14px;background:#FBF8F1;border-radius:10px">' . lnc_e($t['q'])
+          . ' <a href="mailto:' . LNC_MAIL_TO . '" style="color:#D74B27;font-weight:bold;text-decoration:none">' . LNC_MAIL_TO . '</a> ' . lnc_e($t['q_of'])
+          . ' <a href="tel:+31625178050" style="color:#D74B27;font-weight:bold;text-decoration:none">' . LNC_PHONE . '</a>.</p>'
           . '<p style="font-size:15px;line-height:1.6;margin:0 0 20px">' . lnc_e($t['bye']) . '<br><b>La Negra Entertainment</b><br>'
           . '<span style="color:#8A8C88;font-size:13px">Feel the Rhythm. Live the Experience.</span></p>';
 
@@ -200,8 +201,8 @@ if (LNC_SEND_AUTOREPLY) {
     foreach ($t['labels'] as $i => $label) if ($waarden[$i] !== '') $text .= $label . ': ' . $waarden[$i] . "\n";
     $text .= "\n" . $t['next'] . "\n";
     foreach ($t['steps'] as $i => $stap) $text .= ($i + 1) . '. ' . $stap . "\n";
-    $text .= "\n" . $t['offerte_txt'] . "\n" . LNC_SITE . "/offerte-rider.html\n";
-    $text .= "\n" . $t['q'] . ' ' . LNC_PHONE . ".\n\n" . $t['bye'] . "\nLa Negra Entertainment\n" . LNC_SITE . "\n";
+    $text .= "\n" . $t['offerte'] . ': ' . LNC_SITE . "/offerte-rider.html\n";
+    $text .= "\n" . $t['q'] . ' ' . LNC_MAIL_TO . ' ' . $t['q_of'] . ' ' . LNC_PHONE . ".\n\n" . $t['bye'] . "\nLa Negra Entertainment\n" . LNC_SITE . "\n";
 
     lnc_mail($f['E-mail'], $t['subject'], lnc_mail_layout($t['title'], $body, $footer), $text, LNC_MAIL_TO);
 }
