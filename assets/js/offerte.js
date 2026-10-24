@@ -40,8 +40,8 @@
     c.pbPrijs = c.pb === 'Geen' ? 0 : (PB[c.pb + ' ' + c.huur] || 0);
     c.wsPrijs = c.ws.length ? 200 : 0;
     c.sub = c.pakketPrijs + c.extrasPrijs + c.dansPrijs + c.pbPrijs + c.wsPrijs + c.reis;
-    c.btw = Math.round(c.sub * 0.09);
-    c.totaal = c.sub + c.btw;
+    c.btw = Math.round(c.sub * 9) / 100;                 // 9% btw, op de cent
+    c.totaal = Math.round((c.sub + c.btw) * 100) / 100;
     return c;
   }
 
@@ -53,7 +53,7 @@
     set('sum-dans', c.dans === '0' ? 'Geen' : c.dans === '5+' ? '5+ (op aanvraag)' : c.dans + ' danseres' + (c.dans === '1' ? '' : 'sen'));
     set('sum-pb', c.pb === 'Geen' ? 'Geen' : c.pb + ' — ' + c.huur);
     set('sum-workshop', c.ws.length ? c.ws.join(', ') + ' — 1,5 uur' : 'Geen');
-    set('sum-km', c.km ? c.kmEnkel + ' km × 2 = ' + c.km + ' km' : 'Nog niet ingevuld');
+    set('sum-km', c.km ? c.kmEnkel + ' km × 2 = ' + c.km + ' km × € 0,23' : 'Nog niet ingevuld');
     set('sum-reis', euro(c.reis));
     var rk = $('f-reiskosten'); if (rk) rk.value = c.km ? euro(c.reis) : '';
     set('sum-sub', euro(c.sub));

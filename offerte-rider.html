@@ -78,7 +78,7 @@
 <section class="q-step" aria-labelledby="stap6"><h2 id="stap6"><span class="q-nr">6</span>Reiskosten</h2><div class="q-fields">
         <div class="field"><label for="f-km">Afstand enkele reis in km</label><input type="number" id="f-km" min="0" step="1" placeholder="Bijv. 80" inputmode="numeric"></div>
         <div class="field"><label for="f-reiskosten">Reiskosten excl. btw (heen en terug, € 0,23 per km)</label><input type="text" id="f-reiskosten" readonly tabindex="-1" placeholder="Wordt berekend" aria-live="polite"></div>
-      </div><p class="q-note">Weet je dit nog niet? Laat het leeg, dan rekenen we het voor je uit.</p></section>
+      </div><p class="q-note"><b>Reiskosten: € 0,23 per kilometer</b>, heen en terug. Vul de afstand van één kant in, dan rekenen wij het totaal uit (bijv. 40 km enkele reis = 80 km × € 0,23 = € 18,40). Weet je de afstand nog niet? Laat het leeg, dan rekenen we het voor je uit.</p></section>
 <section class="q-step" aria-labelledby="stap7"><h2 id="stap7"><span class="q-nr">7</span>Je gegevens</h2><div class="q-fields">
         <div class="field"><label for="f-naam">Voornaam <span>*</span></label><input id="f-naam" autocomplete="given-name" required maxlength="80"></div>
         <div class="field"><label for="f-achternaam">Achternaam <span>*</span></label><input id="f-achternaam" autocomplete="family-name" required maxlength="80"></div>
@@ -92,13 +92,13 @@
   <aside class="q-sum" id="offerte-overzicht" aria-label="Overzicht">
     <div class="q-sum-card">
       <h2>Overzicht</h2>
-      <div class="sum-row"><span>Pakket</span><b id="sum-pakket">–</b></div><div class="sum-row"><span>Extra acts</span><b id="sum-extras">–</b></div><div class="sum-row"><span>Danseressen</span><b id="sum-dans">–</b></div><div class="sum-row"><span>Photobooth</span><b id="sum-pb">–</b></div><div class="sum-row"><span>Workshop</span><b id="sum-workshop">–</b></div><div class="sum-row"><span>Afstand</span><b id="sum-km">–</b></div><div class="sum-row"><span>Reiskosten</span><b id="sum-reis">–</b></div>
+      <div class="sum-row"><span>Pakket</span><b id="sum-pakket">–</b></div><div class="sum-row"><span>Extra acts</span><b id="sum-extras">–</b></div><div class="sum-row"><span>Danseressen</span><b id="sum-dans">–</b></div><div class="sum-row"><span>Photobooth</span><b id="sum-pb">–</b></div><div class="sum-row"><span>Workshop</span><b id="sum-workshop">–</b></div><div class="sum-row"><span>Afstand</span><b id="sum-km">–</b></div><div class="sum-row"><span>Reiskosten <small style="font-weight:400;opacity:.7">(€ 0,23 per km)</small></span><b id="sum-reis">–</b></div>
       <div class="sum-row sum-line"><span>Subtotaal excl. btw</span><b id="sum-sub">–</b></div>
       <div class="sum-row"><span>9% btw</span><b id="sum-btw">–</b></div>
       <div class="sum-total"><span>Totaal incl. btw</span><b id="sum-total">–</b></div>
       <p class="sum-note">Dit is een indicatie op basis van je keuzes. Je ontvangt altijd een definitieve offerte.</p>
       <button class="btn btn-yellow" type="button" id="offerte-btn">Keuze doorgeven</button>
-      <p class="form-note" style="margin-top: 10px">Iets anders? Mail <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a> of bel <a href="tel:+31625178050">+31 6 25 17 80 50</a>.</p>
+      <p class="form-note" style="margin-top: 10px; color: #BFC1BE">Iets anders? Mail <a href="mailto:info@lanegra-entertainment.nl" style="color: #FDD22C">info@lanegra-entertainment.nl</a> of bel <a href="tel:+31625178050" style="color: #FDD22C">+31 6 25 17 80 50</a>.</p>
       <p class="form-msg err" id="form-err" role="alert" hidden></p>
       <div class="q-success" id="offerte-success" role="status" hidden><b>Aanvraag verstuurd!</b> Bedankt, we nemen zo snel mogelijk contact met je op.</div>
     </div>
