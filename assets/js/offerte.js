@@ -29,8 +29,9 @@
       dans: d ? d.value : '0', dansPrijs: d ? parseInt(d.dataset.dansPrijs, 10) || 0 : 0,
       pb: pb ? pb.value : 'Geen', huur: huur ? huur.value : '2 uur',
       ws: Array.prototype.map.call(form.querySelectorAll('.workshop-type:checked'), function (w) { return w.value; }),
-      km: Math.max(0, Math.round(num('f-km')))
+      kmEnkel: Math.max(0, Math.round(num('f-km')))
     };
+    c.km = c.kmEnkel * 2;                                    // heen en terug
     c.reis = Math.round(c.km * KM_TARIEF * 100) / 100;   // reiskosten altijd berekend, nooit zelf in te vullen
     EXTRAS.forEach(function (x) {
       var on = $(x[0]).checked; c.flags[x[0]] = on;
@@ -52,7 +53,7 @@
     set('sum-dans', c.dans === '0' ? 'Geen' : c.dans === '5+' ? '5+ (op aanvraag)' : c.dans + ' danseres' + (c.dans === '1' ? '' : 'sen'));
     set('sum-pb', c.pb === 'Geen' ? 'Geen' : c.pb + ' — ' + c.huur);
     set('sum-workshop', c.ws.length ? c.ws.join(', ') + ' — 1,5 uur' : 'Geen');
-    set('sum-km', c.km ? c.km + ' km' : 'Nog niet ingevuld');
+    set('sum-km', c.km ? c.kmEnkel + ' km × 2 = ' + c.km + ' km' : 'Nog niet ingevuld');
     set('sum-reis', euro(c.reis));
     var rk = $('f-reiskosten'); if (rk) rk.value = c.km ? euro(c.reis) : '';
     set('sum-sub', euro(c.sub));
@@ -85,7 +86,7 @@
     d.append('telefoon', val('f-tel') || '-');
     d.append('datum_evenement', datum);
     d.append('locatie', val('f-locatie') || '-');
-    d.append('kilometers', c.km ? c.km + ' km' : '-');
+    d.append('kilometers', c.km ? c.km + ' km heen en terug (2 × ' + c.kmEnkel + ' km)' : '-');
     d.append('reiskosten', euro(c.reis));
     d.append('pakket', c.pakket);
     d.append('danseressen', c.dans);
