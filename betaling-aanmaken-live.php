@@ -36,13 +36,15 @@ if ($vorige) {
     $o += [
         'order_id'     => 'LN-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(4))),
         'aanbetaling'  => bk_euro(BK_AANBETALING),
-        'restbetaling' => bk_euro(max(bk_euro_to_float($o['totaal']) - BK_AANBETALING, 0)),
+        'restbetaling' => preg_match('/\d/', $o['totaal']) ? bk_euro(max(bk_euro_to_float($o['totaal']) - BK_AANBETALING, 0)) : 'Volgens offerte',
         'link_ok'      => $verified,
         'status'       => 'akkoord',
         'created_at'   => date('c'),
     ];
 }
 $orderId = $o['order_id'];
+$agendaId = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($_POST['agenda'] ?? ''));
+if ($agendaId !== '' && hash_equals(bk_agenda_sig($agendaId), (string)($_POST['asig'] ?? ''))) $o['agenda_event'] = $agendaId;
 
 try {
     // Herhaalpoging: nog openstaande Revolut-betaling hergebruiken

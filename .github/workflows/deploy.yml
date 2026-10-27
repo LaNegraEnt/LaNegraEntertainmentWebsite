@@ -149,6 +149,29 @@ jobs:
           rm -f "$F"
           echo "config-revolut.php geplaatst$([ "$REVOLUT_SANDBOX" = "true" ] && echo ' (sandbox)')"
 
+      - name: Google Agenda-koppeling op de server zetten
+        # Schrijft agenda/config-google.php (staat niet in de repo) uit de secrets
+        # GOOGLE_CALENDAR_ID en GOOGLE_SERVICE_ACCOUNT_JSON. Lege secrets = overslaan.
+        env:
+          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$GOOGLE_CALENDAR_ID" ] || [ -z "$GOOGLE_SERVICE_ACCOUNT_JSON" ]; then echo "Geen Google-secrets ingesteld, overgeslagen"; exit 0; fi
+          echo "$GOOGLE_SERVICE_ACCOUNT_JSON" | python3 -c "import json,sys; d=json.load(sys.stdin); assert d.get('client_email') and d.get('private_key')" \
+            || { echo "::error::GOOGLE_SERVICE_ACCOUNT_JSON is geen geldig sleutelbestand van een serviceaccount"; exit 1; }
+          case "$GOOGLE_CALENDAR_ID" in *"'"*|*"\\"*) echo "::error::GOOGLE_CALENDAR_ID bevat ongeldige tekens"; exit 1;; esac
+          F="$RUNNER_TEMP/config-google.php"
+          {
+            echo "<?php"
+            echo "// Automatisch geplaatst door de deploy-pipeline (GitHub-secrets). Niet handmatig wijzigen."
+            echo "define('LNA_CALENDAR_ID', '$GOOGLE_CALENDAR_ID');"
+            echo "define('LNA_SERVICE_JSON_B64', '$(printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" | base64 -w0)');"
+          } > "$F"
+          lftp -u "$SFTP_USERNAME,$SFTP_PASSWORD" -p "${SFTP_PORT:-21}" "ftp://$SFTP_HOST" \
+            -e "put \"$F\" -o \"${SFTP_REMOTE_DIR:-public_html}/agenda/config-google.php\"; bye"
+          rm -f "$F"
+          echo "Google Agenda-koppeling geplaatst"
+
       - name: Beveiligingsregels in .htaccess zetten
         # Voegt server/beveiliging.htaccess toe aan de bestaande .htaccess (doorverwijzingen blijven staan),
         # bewaart een reservekopie als .htaccess-backup en zet die terug als de site daarna niet goed laadt.

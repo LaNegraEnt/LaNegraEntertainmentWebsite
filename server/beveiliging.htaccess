@@ -23,7 +23,7 @@
 </FilesMatch>
 
 # Oude/losse scripts die niet meer gebruikt worden
-<FilesMatch "(?i)^(.*-(secure|fixed)\.php|stuur-mail.*\.php|stuur-definitieve-bevestiging-handmatig\.php|init-leads-storage\.php|config-revolut\.php|_boeking\.php)$">
+<FilesMatch "(?i)^(.*-(secure|fixed)\.php|stuur-mail.*\.php|stuur-definitieve-bevestiging-handmatig\.php|init-leads-storage\.php|config-revolut\.php|config-google\.php|_boeking\.php|_google\.php|_mail\.php|_common\.php)$">
   Require all denied
 </FilesMatch>
 

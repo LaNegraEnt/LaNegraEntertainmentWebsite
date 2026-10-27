@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><!-- tijdelijk, tot de Google-koppeling live is -->
+<title>Datum reserveren | La Negra Entertainment</title>
+<meta name="description" content="Check direct of je datum vrij is en reserveer La Negra Entertainment: houd de datum 48 uur vast of boek meteen met aanbetaling.">
+<link rel="canonical" href="https://lanegra-entertainment.nl/agenda.html">
+<link rel="alternate" hreflang="nl" href="https://lanegra-entertainment.nl/agenda.html">
+<link rel="alternate" hreflang="x-default" href="https://lanegra-entertainment.nl/agenda.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="La Negra Entertainment">
+<meta property="og:title" content="Datum reserveren | La Negra Entertainment">
+<meta property="og:description" content="Check direct of je datum vrij is en reserveer La Negra Entertainment: houd de datum 48 uur vast of boek meteen met aanbetaling.">
+<meta property="og:url" content="https://lanegra-entertainment.nl/agenda.html">
+<meta property="og:image" content="https://lanegra-entertainment.nl/assets/img/samba.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1F231E">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/Gallant-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Gallant-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip" href="#inhoud">Naar de inhoud</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="La Negra Entertainment, naar de homepage"><img src="assets/img/logo.png" alt="La Negra Entertainment" width="640" height="326"></a>
+    <button class="menu-toggle" type="button" aria-label="Menu openen" data-open="Menu openen" data-close="Menu sluiten" aria-expanded="false" aria-controls="hoofdmenu"><span></span><span></span><span></span></button>
+    <nav class="nav" id="hoofdmenu" aria-label="Menu">
+      <a href="index.html#over-ons">Over ons</a>
+      <a href="index.html#acts">Diensten</a>
+      <a href="index.html#gelegenheden">Gelegenheden</a>
+      <a href="fotos.html">Galerij</a>
+      <a href="index.html#reviews">Reviews</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <div class="header-right">
+      <nav class="langs" aria-label="Taal / Language / Idioma"><a href="agenda.html" hreflang="nl" lang="nl" aria-current="true">NL</a></nav>
+      <a class="btn btn-yellow btn-sm header-cta" href="agenda.html">Check je datum</a>
+    </div>
+  </div>
+</header>
+<main id="inhoud">
+<section class="page-hero">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Agenda</span></nav>
+    <span class="kicker">Agenda</span>
+    <h1>Check je datum en reserveer direct</h1>
+    <p>Kies een datum en tijd. Houd de datum 48 uur gratis vast, of boek meteen en betaal de aanbetaling van € 50,-.</p>
+  </div>
+</section>
+<div class="wrap cal-layout">
+  <section class="cal-card" aria-labelledby="calTitle">
+    <p class="cal-demo" id="calDemo" hidden>Voorbeeldweergave: de agenda is nog niet aan Google gekoppeld.</p>
+    <div class="cal-head">
+      <button class="cal-nav" type="button" id="calPrev" aria-label="Vorige maand">&lsaquo;</button>
+      <h2 id="calTitle" aria-live="polite"></h2>
+      <button class="cal-nav" type="button" id="calNext" aria-label="Volgende maand">&rsaquo;</button>
+    </div>
+    <div class="cal-grid cal-dow" aria-hidden="true"><span>ma</span><span>di</span><span>wo</span><span>do</span><span>vr</span><span>za</span><span>zo</span></div>
+    <div class="cal-grid" id="calDays"></div>
+    <div class="cal-legend">
+      <span><i class="lg-free"></i>Vrij</span><span><i class="lg-option"></i>Al een optreden, andere tijden vrij</span><span><i class="lg-busy"></i>Volgeboekt</span><span><i class="lg-sel"></i>Jouw keuze</span>
+    </div>
+  </section>
+  <aside class="cal-side">
+    <div class="cal-empty" id="calEmpty">
+      <span class="cal-ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1F231E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg></span>
+      <h2>Kies een datum</h2>
+      <p>Klik in de kalender op een dag. Op dagen met een stip spelen we al ergens, maar andere tijden kunnen nog.</p>
+    </div>
+    <form class="cal-form" id="calForm" hidden novalidate>
+      <p class="cal-date" id="calDate"></p>
+      <p class="cal-status" id="calStatus"></p>
+      <div class="cal-busy" id="calBusy" hidden></div>
+      <div class="cal-times">
+        <div class="field"><label for="cStart">Begintijd <span>*</span></label><select id="cStart"></select></div>
+        <div class="field"><label for="cEind">Eindtijd <span>*</span></label><select id="cEind"></select></div>
+      </div>
+      <div class="field"><label for="cAct">Welke act?</label><select id="cAct"><option>Salsa Brassband</option><option>Brassband</option><option>Samba Danseressen</option><option>Brassband met Danseressen</option><option>Steelband</option><option>Latin Entertainment Band</option><option>Limboshow &amp; Vuurspuwers</option><option>DJ</option><option>Workshops</option><option>Photobooth</option><option>Weet ik nog niet</option></select></div>
+      <div class="field"><label for="cNaam">Naam <span>*</span></label><input id="cNaam" autocomplete="name" required></div>
+      <div class="field"><label for="cMail">E-mail <span>*</span></label><input id="cMail" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="cTel">Telefoon</label><input id="cTel" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="cPlaats">Plaats of locatie</label><input id="cPlaats"></div>
+      <div class="field"><label for="cOpm">Opmerking</label><textarea id="cOpm" rows="3"></textarea></div>
+      <div class="hp" aria-hidden="true"><label for="cWeb">Website</label><input id="cWeb" tabindex="-1" autocomplete="off"></div>
+      <fieldset class="cal-choice"><legend>Hoe wil je reserveren?</legend>
+        <label class="cal-opt"><input type="radio" name="keuze" value="optie" checked><span><b>Optie 48 uur vasthouden</b><small>Gratis en vrijblijvend. We nemen contact op om alles door te spreken.</small></span></label>
+        <label class="cal-opt"><input type="radio" name="keuze" value="direct"><span><b>Direct boeken</b><small>Je gaat meteen door naar de aanbetaling van € 50,- en de datum is definitief van jou.</small></span></label>
+      </fieldset>
+      <button class="btn btn-yellow" type="submit" id="calBtn">Houd deze datum 48 uur vast</button>
+      <p class="form-msg err" id="calErr" role="alert" hidden></p>
+    </form>
+    <div class="cal-done" id="calDone" hidden role="status">
+      <span class="cal-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1F231E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>
+      <h2 id="calDoneH">Datum vastgehouden!</h2>
+      <p id="calDoneTxt"></p>
+      <button class="btn btn-ghost btn-sm" type="button" id="calAgain">Nog een datum kiezen</button>
+    </div>
+  </aside>
+</div>
+<style>
+.cal-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;padding-top:40px;padding-bottom:80px;align-items:start}
+.cal-card,.cal-side{border:1.5px solid var(--line);border-radius:var(--radius);padding:26px}
+.cal-side{background:var(--light);border-color:transparent;position:sticky;top:100px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.cal-head h2{font-size:26px}
+.cal-nav{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font:inherit;font-size:26px;line-height:1;cursor:pointer;color:var(--grey)}
+.cal-nav:hover{border-color:var(--grey)}.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.cal-dow span{text-align:center;font-size:13px;font-weight:700;color:var(--grey-3);text-transform:uppercase;letter-spacing:.06em;padding-bottom:4px}
+.cal-day{position:relative;aspect-ratio:1/1;min-height:44px;border-radius:14px;border:2px solid transparent;background:#fff;font:inherit;font-weight:700;font-size:17px;color:var(--grey);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1.5px var(--line)}
+.cal-day:hover{box-shadow:inset 0 0 0 2px var(--grey)}
+.cal-day.option::after{content:'';position:absolute;bottom:7px;width:7px;height:7px;border-radius:50%;background:var(--sunglow-dark)}
+.cal-day.busy{background:var(--light);color:#B5B7B3;box-shadow:none;cursor:not-allowed;text-decoration:line-through}
+.cal-day.past{color:#C9CBC8;box-shadow:none;cursor:default}
+.cal-day.today{box-shadow:inset 0 0 0 2px var(--scooter)}
+.cal-day.sel{background:var(--sunglow);box-shadow:inset 0 0 0 2px var(--grey)}
+.cal-day:focus-visible{outline:3px solid var(--scooter);outline-offset:2px}
+.cal-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;font-size:14px;color:var(--grey-2)}
+.cal-legend span{display:inline-flex;align-items:center;gap:7px}.cal-legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+.lg-free{background:#fff;box-shadow:inset 0 0 0 1.5px #C9CBC8}.lg-option{background:var(--sunglow-dark);border-radius:50%!important}.lg-busy{background:#DADCD8}.lg-sel{background:var(--sunglow)}
+.cal-empty,.cal-done{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.cal-empty h2,.cal-done h2{font-size:24px}.cal-empty p,.cal-done p{color:var(--grey-2);line-height:1.6}
+.cal-ic{width:56px;height:56px;border-radius:16px;background:var(--sunglow);display:inline-flex;align-items:center;justify-content:center}
+.cal-form{display:flex;flex-direction:column;gap:14px}
+.cal-form .field input,.cal-form .field select{background:#fff}
+.cal-date{font-size:24px;font-weight:700}
+.cal-status{font-size:14px;font-weight:700;color:#2F6A14;margin-top:-8px}.cal-status.warn{color:#9A6A00}
+.cal-slots{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}.cal-slots legend{font-size:14px;font-weight:700;margin-bottom:8px}
+.cal-slots .tag span{background:#fff}
+.cal-form .btn{justify-content:center}
+.cal-note{font-size:13px;color:var(--grey-3);line-height:1.5}
+@media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-side{position:static}}
+@media (max-width:480px){.cal-card{padding:16px 12px}.cal-grid{gap:5px}.cal-day{font-size:15px;border-radius:10px;min-height:38px}}
+.cal-times{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cal-busy{font-size:14px;background:#fff;border-radius:12px;padding:10px 14px;line-height:1.6;color:var(--grey-2)}.cal-busy b{color:var(--grey)}
+.cal-choice{border:0;padding:0;margin:0;display:grid;gap:10px}.cal-choice legend{font-size:14px;font-weight:700;margin-bottom:8px}
+.cal-opt{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:14px;padding:14px 16px;cursor:pointer;box-shadow:inset 0 0 0 1.5px var(--line)}
+.cal-opt input{margin-top:4px;accent-color:var(--grey);width:18px;height:18px;flex:none}
+.cal-opt b{display:block;font-size:16px}.cal-opt small{display:block;font-size:13px;color:var(--grey-3);line-height:1.45;margin-top:2px}
+.cal-opt:has(input:checked){box-shadow:inset 0 0 0 2px var(--grey);background:#FFFBEA}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cal-demo{background:var(--sunglow);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:700;margin-bottom:16px}
+</style>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-top">
+    <img src="assets/img/logo.png" alt="La Negra Entertainment" width="640" height="326" loading="lazy">
+    <div class="footer-col"><b>Acts</b><a href="acts/salsa-brassband.html">Salsa Brassband</a><a href="acts/samba-danseressen.html">Samba Danseressen</a><a href="acts/brassband.html">Brassband</a><a href="acts/brassband-met-danseressen.html">Brassband met Danseressen</a><a href="acts/steelband.html">Steelband</a><a href="acts/latin-entertainment-band.html">Latin Entertainment Band</a><a href="acts/limboshow-vuurspuwers.html">Limboshow &amp; Vuurspuwers</a><a href="acts/workshops.html">Workshops</a><a href="acts/dj.html">DJ</a><a href="acts/photobooth.html">Photobooth</a></div>
+    <div class="footer-col"><b>Gelegenheden</b><a href="gelegenheden/bruiloft.html">Bruiloft</a><a href="gelegenheden/bedrijfsfeest.html">Bedrijfsfeest</a><a href="gelegenheden/verjaardag-jubileum.html">Verjaardag &amp; jubileum</a><a href="gelegenheden/festival.html">Festival</a><a href="gelegenheden/teambuilding.html">Teambuilding</a><a href="gelegenheden/opening-launch.html">Opening &amp; launch</a><a href="gelegenheden/themafeest.html">Themafeest</a></div>
+    <div class="footer-col"><b>Contact</b>
+      <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a>
+      <a href="tel:+31625178050">+31 6 25 17 80 50</a>
+      <a href="offerte-rider.html">Offerte samenstellen</a>
+      <a href="fotos.html">Foto's</a>
+      <a href="rider.html">Technische rider</a>
+      <a href="algemene-voorwaarden.html">Algemene voorwaarden</a>
+      <b style="margin-top: 12px">Volg ons</b>
+      <a href="https://www.instagram.com/lanegraentertainment/" rel="noopener" target="_blank">Instagram</a>
+      <a href="https://www.facebook.com/profile.php?id=100075963041275" rel="noopener" target="_blank">Facebook</a>
+      <a href="https://www.tiktok.com/@elginfelipa" rel="noopener" target="_blank">TikTok</a>
+      <a href="https://www.youtube.com/@elginfelipa2241" rel="noopener" target="_blank">YouTube</a>
+    </div>
+  </div>
+  <div class="footer-bottom"><div class="wrap">© 2026 La Negra Entertainment · KVK 67106951 · BTW NL002420332B84</div></div>
+</footer>
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/agenda.js" defer></script>
+<script src="lanegra-chat/lanegra-chat.js" data-ai-url="lanegra-chat/ai-chat.php" defer></script>
+</body>
+</html>

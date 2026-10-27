@@ -1,0 +1,3 @@
+<FilesMatch "^(config|config-google|_google)\.php$|\.(json|csv|log|md)$">
+  Require all denied
+</FilesMatch>

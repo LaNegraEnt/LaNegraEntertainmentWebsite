@@ -110,7 +110,7 @@
     if (btn.disabled) return;
     btn.disabled = true; err.hidden = true; btn.textContent = 'Betaling voorbereiden…';
     var fd = new FormData();
-    ['naam', 'email', 'tel', 'datum', 'locatie', 'pakket', 'danseressen', 'extras', 'photobooth', 'opmerking', 'reiskosten', 'subtotaal', 'btw', 'totaal', 'sig']
+    ['naam', 'email', 'tel', 'datum', 'locatie', 'pakket', 'danseressen', 'extras', 'photobooth', 'opmerking', 'reiskosten', 'subtotaal', 'btw', 'totaal', 'sig', 'agenda', 'asig']
       .forEach(function (k) { fd.append(k, q(k)); });
     try {
       var res = await fetch('betaling-aanmaken-live.php', { method: 'POST', body: fd });

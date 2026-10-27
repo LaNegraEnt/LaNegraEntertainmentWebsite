@@ -83,6 +83,11 @@ function bk_sign(array $f): string {
     return substr(hash_hmac('sha256', $s, bk_secret()), 0, 32);
 }
 
+/** Handtekening voor de koppeling betaling ↔ agenda-afspraak (agenda-id in de akkoord-link). */
+function bk_agenda_sig(string $eventId): string {
+    return substr(hash_hmac('sha256', 'agenda|' . $eventId, bk_secret()), 0, 24);
+}
+
 function bk_akkoord_link(array $f): string {
     $q = [];
     foreach (BK_LINK_FIELDS as $k) $q[$k] = $f[$k] ?? '-';
@@ -175,6 +180,15 @@ function bk_verwerk_betaling(array $o): array {
         $o['bevestiging_verstuurd'] = date('c');   // eerst vastleggen, zodat gelijktijdige aanroepen niet dubbel mailen
         bk_save_order($o);
         bk_mail_bevestiging($o);
+        // Kwam de boeking uit de agenda? Dan de afspraak op "GEBOEKT" zetten
+        if (!empty($o['agenda_event'])) {
+            try {
+                require_once __DIR__ . '/agenda/_google.php';
+                lna_bevestig_boeking($o['agenda_event'], $o['order_id']);
+            } catch (Throwable $e) {
+                error_log('Agenda bijwerken na betaling: ' . $e->getMessage());
+            }
+        }
     }
     return $o;
 }
