@@ -10,7 +10,9 @@ try {
     $o = bk_load_order($orderId);
     if (!$o) bk_out(['ok' => false], 404);
     if (($o['status'] ?? '') !== 'paid') $o = bk_verwerk_betaling($o);
-    bk_out(['ok' => true, 'status' => $o['status'] === 'paid' ? 'paid' : ($o['status'] === 'failed' ? 'failed' : 'open')]);
+    else $o = bk_agenda_bijwerken($o);   // eerder mislukte agenda-update opnieuw proberen
+    bk_out(['ok' => true, 'status' => $o['status'] === 'paid' ? 'paid' : ($o['status'] === 'failed' ? 'failed' : 'open'),
+            'agenda' => empty($o['agenda_event']) ? 'geen' : (!empty($o['agenda_bijgewerkt']) ? 'bijgewerkt' : 'fout')]);
 } catch (Throwable $e) {
     error_log('betaling-status.php: ' . $e->getMessage());
     bk_out(['ok' => false], 500);

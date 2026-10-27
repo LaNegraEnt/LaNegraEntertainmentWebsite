@@ -180,16 +180,36 @@ function bk_verwerk_betaling(array $o): array {
         $o['bevestiging_verstuurd'] = date('c');   // eerst vastleggen, zodat gelijktijdige aanroepen niet dubbel mailen
         bk_save_order($o);
         bk_mail_bevestiging($o);
-        // Kwam de boeking uit de agenda? Dan de afspraak op "GEBOEKT" zetten
-        if (!empty($o['agenda_event'])) {
-            try {
-                require_once __DIR__ . '/agenda/_google.php';
-                lna_bevestig_boeking($o['agenda_event'], $o['order_id']);
-            } catch (Throwable $e) {
-                error_log('Agenda bijwerken na betaling: ' . $e->getMessage());
-            }
+    }
+    if ($o['status'] === 'paid') $o = bk_agenda_bijwerken($o);
+    return $o;
+}
+
+/**
+ * Kwam de boeking uit de agenda? Dan de afspraak op "GEBOEKT" zetten. Lukt dat niet, dan krijg je één keer
+ * een mail met de reden; bij een volgende statuscontrole (bedankt.html) wordt het opnieuw geprobeerd.
+ */
+function bk_agenda_bijwerken(array $o): array {
+    if (empty($o['agenda_event']) || !empty($o['agenda_bijgewerkt'])) return $o;
+    try {
+        require_once __DIR__ . '/agenda/_google.php';
+        lna_bevestig_boeking($o['agenda_event'], $o['order_id']);
+        $o['agenda_bijgewerkt'] = date('c');
+        unset($o['agenda_fout']);
+    } catch (Throwable $e) {
+        $o['agenda_fout'] = substr($e->getMessage(), 0, 300);
+        error_log('Agenda bijwerken na betaling: ' . $o['agenda_fout']);
+        if (empty($o['agenda_fout_gemeld'])) {
+            $o['agenda_fout_gemeld'] = date('c');
+            lnc_mail(LNC_MAIL_TO, 'Let op: agenda niet bijgewerkt – ' . $o['naam'],
+                lnc_mail_layout('Agenda niet bijgewerkt',
+                    '<p style="font-size:15px;line-height:1.6">De aanbetaling van ' . lnc_e($o['naam']) . ' (order ' . lnc_e($o['order_id']) . ') is binnen, '
+                    . 'maar de afspraak in "La Negra optredens" kon niet automatisch op GEBOEKT worden gezet. Pas hem zelf aan, zodat hij niet na 48 uur verloopt.</p>'
+                    . '<p style="font-size:13px;color:#8A8C88">Reden: ' . lnc_e($o['agenda_fout']) . '</p>', 'Order ' . lnc_e($o['order_id'])),
+                "Agenda niet bijgewerkt voor order {$o['order_id']} ({$o['naam']}). Reden: {$o['agenda_fout']}\n", '', 'Agenda via website');
         }
     }
+    bk_save_order($o);
     return $o;
 }
 
