@@ -98,10 +98,17 @@
     row('Naam', q('naam')) + row('E-mail', q('email')) + row('Telefoon', q('tel')) + row('Datum evenement', q('datum')) +
     row('Locatie', q('locatie')) + row('Pakket', q('pakket')) + row('Danseressen', q('danseressen')) + row('Extra acts', q('extras')) +
     row('Photobooth', q('photobooth')) + row('Opmerkingen', q('opmerking'));
-  var right = row('Reiskosten', q('reiskosten')) + row('Subtotaal excl. btw', q('subtotaal')) + row('Btw (9%)', q('btw')) + row('Totaal incl. btw', q('totaal'), true) +
-    row('Aanbetaling nu', aanbetaling);
-  var totaal = parseFloat(q('totaal').replace(/[^\d,]/g, '').replace(',', '.'));
-  if (totaal > 50) right += row('Restbetaling', '€ ' + (totaal - 50).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+  var right;
+  if (/\d/.test(q('totaal'))) {
+    right = row('Reiskosten', q('reiskosten')) + row('Subtotaal excl. btw', q('subtotaal')) + row('Btw (9%)', q('btw')) + row('Totaal incl. btw', q('totaal'), true) +
+      row('Aanbetaling nu', aanbetaling);
+    var totaal = parseFloat(q('totaal').replace(/[^\d,]/g, '').replace(',', '.'));
+    if (totaal > 50) right += row('Restbetaling', '€ ' + (totaal - 50).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+  } else {
+    // Reservering via de agenda: nog geen pakketprijs, alleen de aanbetaling om de datum vast te leggen
+    right = row('Aanbetaling nu', aanbetaling, true) +
+      '<p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6E6A">Met de aanbetaling leg je je datum definitief vast. Het totaalbedrag en de restbetaling spreken we daarna met je af in je offerte op maat.</p>';
+  }
   document.getElementById('overview-right').innerHTML = right;
 
   var akkoord = document.getElementById('akkoordCheck'), btn = document.getElementById('betaalBtn'), err = document.getElementById('betaalErr');
