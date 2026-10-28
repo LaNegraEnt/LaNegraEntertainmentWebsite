@@ -118,7 +118,7 @@ def presskit():
           '<div class="cols"><div>'
           + sect('Also available', O, ['Brass band (also as walking act)', 'Brass band with samba dancers', 'Samba dancers', 'Steel band', 'Latin Entertainment Band', 'Limbo show and fire breathers'])
           + '</div><div>'
-          + sect('For organisers', G, ['Technical rider: lanegra-entertainment.nl/downloads/rider-salsa-brassband-en.pdf', 'Photos and info: lanegra-entertainment.nl/en/occasions/latin-festivals.html', 'Fee on request, depending on line-up, set length and travel', 'International bookings (e.g. Spain, Canary Islands) in consultation'])
+          + sect('For organisers', G, ['Technical rider: lanegra-entertainment.nl/downloads/rider-salsa-brassband-en.pdf', 'Photos and info: lanegra-entertainment.nl/en/occasions/latin-festivals.html', 'Fee on request, depending on line-up, set length and travel', 'International bookings in consultation'])
           + '</div></div>'
           + '<div class="dark"><h3>Booking &amp; contact</h3><p><b>Elgin Felipa</b> · Manager<br>info@lanegra-entertainment.nl · +31 6 25 17 80 50 (WhatsApp)<br>lanegra-entertainment.nl · Instagram @lanegraentertainment</p></div>')
     return page(p1) + page(p2)
