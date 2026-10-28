@@ -162,11 +162,25 @@ if (LNC_SEND_AUTOREPLY) {
             'offerte' => 'Crea tu presupuesto',
             'foot' => 'Recibes este correo porque enviaste una solicitud en lanegra-entertainment.nl.',
         ],
+        'de' => [
+            'subject' => 'Wir haben Ihre Anfrage erhalten – La Negra Entertainment',
+            'hi' => 'Hallo', 'title' => 'Vielen Dank für Ihre Anfrage!',
+            'intro' => 'Ihre Anfrage ist bei uns eingegangen. Unten sehen Sie eine Übersicht Ihrer Angaben.',
+            'card' => 'Ihre Anfrage',
+            'labels' => ['Art der Veranstaltung', 'Act', 'Datum', 'Ort', 'Gäste', 'Nachricht'],
+            'next' => 'Wie geht es weiter?',
+            'steps' => ['Stellen Sie über den Button unten Ihr Angebot zusammen: Wählen Sie Act und Extras und Sie sehen sofort den Gesamtbetrag.', 'Sie erhalten Ihre Auftragsbestätigung per E-Mail. Stimmt alles? Geben Sie Ihre Zustimmung und zahlen Sie die Anzahlung von 50 €.', 'Ihr Termin steht fest. Und dann: ¡fiesta!'],
+            'q' => 'Haben Sie etwas anderes im Sinn oder ist Ihr Wunsch nicht dabei? Gern erstellen wir ein individuelles Angebot. Schreiben Sie an', 'q_of' => 'oder rufen Sie an:',
+            'bye' => 'Musikalische Grüße,',
+            'btn' => 'Unsere Acts ansehen',
+            'offerte' => 'Angebot zusammenstellen',
+            'foot' => 'Sie erhalten diese E-Mail, weil Sie eine Anfrage über lanegra-entertainment.nl gesendet haben.',
+        ],
     ];
     $lang = strtolower($f['Taal']);
     $t = $T[$lang] ?? $T['nl'];
     $voornaam = explode(' ', $f['Naam'])[0];
-    $actsUrl = LNC_SITE . '/' . ($lang === 'en' || $lang === 'es' ? $lang . '/' : '') . 'index.html#acts';
+    $actsUrl = LNC_SITE . '/' . (in_array($lang, ['en', 'es', 'de'], true) ? $lang . '/' : '') . 'index.html#acts';
 
     $stappen = '';
     foreach ($t['steps'] as $i => $stap) {

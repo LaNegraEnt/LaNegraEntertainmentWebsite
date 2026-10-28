@@ -79,7 +79,7 @@
   '#lnc-hp{position:absolute;left:-9999px;opacity:0}' +
   '@media (max-width:480px){#lnc-box{right:8px;left:8px;width:auto;bottom:84px;height:calc(100vh - 100px);max-height:none}#lnc-launch{width:52px;height:64px}}';
 
-  /* ---------- Teksten per taal (nl / en / es) ---------- */
+  /* ---------- Teksten per taal (nl / en / es / de) ---------- */
   var LANGS = {
     nl: {
       welcome: '<h4>Bon Bini!</h4><strong>Welkom bij La Negra Entertainment!</strong><p>Ik ben jouw digitale entertainmentassistente!</p><p>Wil je meer weten over onze brassbands, danseressen, Latin bands of andere diensten?</p><p>Stel me gerust al je vragen. Ik help je graag!</p>',
@@ -178,6 +178,39 @@
         { key: 'email', q: '¿A qué correo electrónico te enviamos el presupuesto?', input: 'email', bad: 'Ese correo no parece válido. Inténtalo de nuevo.' },
         { key: 'telefoon', q: '¿Y tu número de teléfono? Así podemos responder más rápido.', input: 'tel', skip: 'Prefiero no darlo' },
         { key: 'opmerking', q: '¿Algún otro deseo o pregunta que debamos saber?', input: 'text', skip: 'No, eso es todo' }
+      ]
+    },
+    de: {
+      welcome: '<h4>Bon Bini!</h4><strong>Willkommen bei La Negra Entertainment!</strong><p>Ich bin Ihre digitale Entertainment-Assistentin!</p><p>Möchten Sie mehr über unsere Brassbands, Tänzerinnen, Latin-Bands oder andere Leistungen erfahren?</p><p>Fragen Sie mich gern alles. Ich helfe Ihnen gern!</p>',
+      welcomeTxt: 'Bon Bini! Willkommen bei La Negra Entertainment! Ich bin Ihre digitale Entertainment-Assistentin. Fragen Sie mich gern alles.',
+      menu: ['Unsere Leistungen', 'Preise', 'Buchung anfragen', 'Kontakt'],
+      back: 'Zurück zum Menü', send: 'Stimmt, absenden', redo: 'Neu beginnen', retry: 'Erneut versuchen',
+      placeholder: 'Ihre Frage hier…', close: 'Schließen', sendLbl: 'Senden', launch: 'Chat mit La Negra Entertainment',
+      teaser: '<b>Bon Bini!</b>Feier geplant? Prüfen Sie gleich, ob Ihr Termin noch frei ist.',
+      contact: 'Sie erreichen uns jederzeit direkt:',
+      already: 'Ihre Anfrage wurde bereits gesendet. Wir melden uns bald!',
+      fill: 'Können Sie das noch ausfüllen?',
+      check: 'Kurz zur Kontrolle:', guests: 'Gäste', in: 'in',
+      thanks: function (n) { return 'Vielen Dank, ' + n + '! Ihre Anfrage ist eingegangen. Sie erhalten eine Bestätigung per E-Mail und wir schicken Ihnen bald ein individuelles Angebot.'; },
+      err: 'Beim Senden ist etwas schiefgelaufen. Versuchen Sie es erneut oder schreiben Sie uns an ',
+      conn: 'Verbindung fehlgeschlagen. Schreiben Sie uns gern an ',
+      unknown: 'Gute Frage! Die beantworten wir am liebsten persönlich. Soll ich direkt eine unverbindliche Anfrage für Sie vorbereiten?',
+      txt: {
+        diensten: 'Wir bringen die Karibik auf Ihre Feier: Sambatänzerinnen, Brassband (auch mit Tänzerinnen), Salsa-Brassband, Steelband, Latin Entertainment Band, Limboshow und Feuerspucker, Salsa- und Percussion-Workshops und eine Fotobox. Für Hochzeiten, Geburtstage, Firmenfeiern, Festivals und mehr.',
+        prijzen: 'Der Preis hängt vom Act, der Dauer und dem Ort ab. Erzählen Sie mir kurz, was Sie suchen, dann erhalten Sie ein unverbindliches, individuelles Angebot.',
+        datum: 'Beliebte Termine, vor allem Samstage in der Saison, sind schnell vergeben. Nennen Sie uns Ihr Datum, dann prüfen wir es sofort.'
+      },
+      re: { prijs: /preis|kost|tarif|budget|€|euro|gage/i, datum: /verfügbar|frei|datum|termin|kalender/i },
+      flow: [
+        { key: 'type', q: 'Schön! Was für eine Feier oder Veranstaltung planen Sie?', options: ['Hochzeit', 'Geburtstag / Jubiläum', 'Firmenfeier / Teambuilding', 'Festival', 'Eröffnung & Launch', 'Mottoparty', 'Sonstiges'] },
+        { key: 'act', q: 'Wonach suchen Sie?', options: ['Sambatänzerinnen', 'Brassband', 'Brassband + Tänzerinnen', 'Salsa-Brassband', 'Steelband', 'Latin-Band', 'Limbo & Feuerspucker', 'Workshop', 'Fotobox', 'Beratung / Kombination'] },
+        { key: 'datum', q: 'An welchem Datum? (z. B. 14-06-2027)', input: 'text' },
+        { key: 'plaats', q: 'In welcher Stadt oder an welchem Ort?', input: 'text' },
+        { key: 'gasten', q: 'Mit wie vielen Gästen rechnen Sie ungefähr?', options: ['Weniger als 50', '50 – 100', '100 – 250', '250+'] },
+        { key: 'naam', q: 'Prima. Wie ist Ihr Name?', input: 'text' },
+        { key: 'email', q: 'An welche E-Mail-Adresse dürfen wir das Angebot senden?', input: 'email', bad: 'Das scheint keine gültige E-Mail-Adresse zu sein. Bitte versuchen Sie es erneut.' },
+        { key: 'telefoon', q: 'Und Ihre Telefonnummer? Dann können wir schneller reagieren.', input: 'tel', skip: 'Lieber nicht' },
+        { key: 'opmerking', q: 'Gibt es noch Wünsche oder Fragen, die wir wissen sollten?', input: 'text', skip: 'Nein, das war alles' }
       ]
     }
   };
