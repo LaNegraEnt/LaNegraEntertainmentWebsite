@@ -10,6 +10,7 @@ if (!bk_rate('betaling', 10)) bk_out(['ok' => false, 'message' => 'Te veel pogin
 
 $o = [];
 foreach (BK_LINK_FIELDS as $k) $o[$k] = bk_clean($_POST[$k] ?? '', in_array($k, ['opmerking', 'extras'], true) ? 2000 : 300);
+$lang = bk_lang((string)($_POST['lang'] ?? ''));
 
 if ($o['naam'] === '-' || !filter_var($o['email'], FILTER_VALIDATE_EMAIL) || $o['totaal'] === '-') {
     bk_out(['ok' => false, 'message' => 'Naam, e-mailadres of totaalbedrag ontbreekt'], 422);
@@ -32,6 +33,7 @@ if ($vorige) {
     if (($vorige['status'] ?? '') === 'paid') bk_out(['ok' => false, 'message' => 'De aanbetaling voor deze boeking is al ontvangen'], 409);
     $o = $vorige;
     $herhaling = true;
+    $lang = bk_lang($o);
 } else {
     $o += [
         'order_id'     => 'LN-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(4))),
@@ -40,6 +42,7 @@ if ($vorige) {
         'link_ok'      => $verified,
         'status'       => 'akkoord',
         'created_at'   => date('c'),
+        'lang'         => $lang,
     ];
 }
 $orderId = $o['order_id'];
@@ -59,7 +62,7 @@ try {
         'amount'              => (int)round(BK_AANBETALING * 100),   // in centen
         'currency'            => 'EUR',
         'description'         => 'Aanbetaling La Negra Entertainment ' . $orderId,
-        'redirect_url'        => LNC_SITE . '/bedankt.html?order_id=' . rawurlencode($orderId),
+        'redirect_url'        => LNC_SITE . ($lang === 'en' ? '/en/thank-you.html' : '/bedankt.html') . '?order_id=' . rawurlencode($orderId),
         'merchant_order_data' => ['reference' => $orderId],
         'customer'            => ['email' => $o['email']],
     ]);
@@ -88,23 +91,33 @@ $waarschuwing = $verified ? '' :
     . '<b>Let op:</b> deze link komt niet overeen met een offerte van de website (oude link of aangepaste bedragen). Controleer de bedragen voordat je bevestigt.</p>';
 $body = '<div style="font-size:26px;font-weight:bold;line-height:1.25;margin:0 0 4px">Akkoord ontvangen</div>'
       . '<div style="font-size:14px;color:#8A8C88;margin:0 0 20px">Order ' . lnc_e($orderId) . ' &middot; ' . date('d-m-Y H:i') . '</div>'
-      . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px">' . lnc_e($o['naam']) . ' heeft akkoord gegeven op de opdrachtbevestiging en is doorgestuurd naar de aanbetaling van ' . lnc_e($o['aanbetaling']) . '. Je krijgt opnieuw bericht zodra de betaling binnen is.</p>'
+      . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px">' . lnc_e($o['naam']) . ' heeft akkoord gegeven op de opdrachtbevestiging en is doorgestuurd naar de aanbetaling van ' . lnc_e($o['aanbetaling']) . '. Je krijgt opnieuw bericht zodra de betaling binnen is.'
+      . ($lang === 'en' ? ' <b>Engelstalige klant.</b>' : '') . '</p>'
       . $waarschuwing . bk_contact_card($o) . bk_boeking_card($o, 'De boeking') . bk_bedragen_card($o, true)
       . '<div style="margin:0 0 20px">' . lnc_mail_button(bk_agenda_link($o), 'Zet in agenda', true) . '</div>';
 lnc_mail(LNC_MAIL_TO, 'Akkoord ontvangen: ' . $o['naam'] . ' – ' . $datum,
     lnc_mail_layout('Akkoord van ' . $o['naam'], $body, 'Order ' . lnc_e($orderId) . ($verified ? '' : ' &middot; link niet geverifieerd')),
     "Akkoord ontvangen van {$o['naam']} ({$o['email']}) voor $datum.\nPakket: {$o['pakket']}\nTotaal: {$o['totaal']}\nOrder: $orderId\n", $o['email'], 'Akkoord via website');
 
-$body = '<div style="font-size:15px;color:#8A8C88;margin:0 0 4px">Hoi ' . lnc_e(bk_voornaam($o['naam'])) . ',</div>'
-      . '<div style="font-size:26px;font-weight:bold;line-height:1.25;margin:0 0 10px">We hebben je akkoord ontvangen</div>'
-      . '<p style="font-size:15px;line-height:1.6;margin:0 0 20px">Bedankt voor je vertrouwen in La Negra Entertainment! Met de aanbetaling van <b>' . lnc_e($o['aanbetaling']) . '</b> leg je je datum definitief vast. Zodra die binnen is, krijg je van ons de definitieve bevestiging.</p>'
-      . bk_boeking_card($o, 'Je boeking') . bk_bedragen_card($o, true)
-      . '<p style="font-size:15px;line-height:1.6;margin:0 0 12px">Is de betaling niet gelukt of heb je het venster gesloten? Via de knop hieronder kun je de aanbetaling opnieuw starten.</p>'
-      . '<div style="margin:0 0 20px">' . lnc_mail_button($akkoordLink, 'Aanbetaling doen', true) . '</div>'
-      . '<p style="font-size:15px;line-height:1.6;margin:0 0 20px">Muzikale groet,<br><b>La Negra Entertainment</b></p>';
-lnc_mail($o['email'], 'We hebben je akkoord ontvangen – La Negra Entertainment',
-    lnc_mail_layout('We hebben je akkoord ontvangen', $body, bk_footer_klant()),
-    "Hoi " . bk_voornaam($o['naam']) . ",\n\nWe hebben je akkoord ontvangen. Met de aanbetaling van {$o['aanbetaling']} leg je je datum definitief vast.\n"
-    . "Betaling niet gelukt? Start hem opnieuw via: $akkoordLink\n\nMuzikale groet,\nLa Negra Entertainment\n", LNC_MAIL_TO);
+$en = $lang === 'en';
+$body = '<div style="font-size:15px;color:#8A8C88;margin:0 0 4px">' . ($en ? 'Hi ' : 'Hoi ') . lnc_e(bk_voornaam($o['naam'])) . ',</div>'
+      . '<div style="font-size:26px;font-weight:bold;line-height:1.25;margin:0 0 10px">' . ($en ? 'We have received your approval' : 'We hebben je akkoord ontvangen') . '</div>'
+      . '<p style="font-size:15px;line-height:1.6;margin:0 0 20px">' . ($en
+          ? 'Thank you for choosing La Negra Entertainment! With the deposit of <b>' . lnc_e($o['aanbetaling']) . '</b> you secure your date. As soon as we receive it, you will get our final confirmation.'
+          : 'Bedankt voor je vertrouwen in La Negra Entertainment! Met de aanbetaling van <b>' . lnc_e($o['aanbetaling']) . '</b> leg je je datum definitief vast. Zodra die binnen is, krijg je van ons de definitieve bevestiging.') . '</p>'
+      . bk_boeking_card($o, $en ? 'Your booking' : 'Je boeking', $lang) . bk_bedragen_card($o, true, $lang)
+      . '<p style="font-size:15px;line-height:1.6;margin:0 0 12px">' . ($en
+          ? 'Payment not completed or did you close the window? Use the button below to start the deposit again.'
+          : 'Is de betaling niet gelukt of heb je het venster gesloten? Via de knop hieronder kun je de aanbetaling opnieuw starten.') . '</p>'
+      . '<div style="margin:0 0 20px">' . lnc_mail_button($akkoordLink, $en ? 'Pay deposit' : 'Aanbetaling doen', true) . '</div>'
+      . '<p style="font-size:15px;line-height:1.6;margin:0 0 20px">' . ($en ? 'Musical greetings,' : 'Muzikale groet,') . '<br><b>La Negra Entertainment</b></p>';
+$titel = $en ? 'We have received your approval' : 'We hebben je akkoord ontvangen';
+lnc_mail($o['email'], $titel . ' – La Negra Entertainment',
+    lnc_mail_layout($titel, $body, bk_footer_klant($lang)),
+    $en
+        ? "Hi " . bk_voornaam($o['naam']) . ",\n\nWe have received your approval. With the deposit of {$o['aanbetaling']} you secure your date.\n"
+          . "Payment not completed? Start it again via: $akkoordLink\n\nMusical greetings,\nLa Negra Entertainment\n"
+        : "Hoi " . bk_voornaam($o['naam']) . ",\n\nWe hebben je akkoord ontvangen. Met de aanbetaling van {$o['aanbetaling']} leg je je datum definitief vast.\n"
+          . "Betaling niet gelukt? Start hem opnieuw via: $akkoordLink\n\nMuzikale groet,\nLa Negra Entertainment\n", LNC_MAIL_TO);
 
 bk_out(['ok' => true, 'order_id' => $orderId, 'checkout_url' => $o['checkout_url']]);

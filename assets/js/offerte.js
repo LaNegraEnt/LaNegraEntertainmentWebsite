@@ -3,12 +3,26 @@
   var form = document.getElementById('offerte-form');
   if (!form) return;
   var $ = function (id) { return document.getElementById(id); };
+  var EN = document.documentElement.lang === 'en';   // en/quote.html gebruikt hetzelfde script
+  var L = EN ? {
+    none: 'None', notChosen: 'Not chosen', dancer: ' dancer', dancers: ' dancers', onRequest: '5+ (on request)', hours: ' hours', ws: ' — 1.5 hours',
+    notFilled: 'Not filled in yet', yes: 'Yes', no: 'No', djNote: 'DJ chosen (2.5 hours, +€400). ', name: 'Please enter your first name.',
+    mail: 'Please enter a valid email address.', date: 'Please enter the date of your event.', busy: 'Sending…', btn: 'Send my choice',
+    fail: 'Sending failed. Please try again or email us at info@lanegra-entertainment.nl.', post: '../stuur-offerte.php',
+    extras: ['Fire breather / Limbo show', 'Steel band 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2.5 hours']
+  } : {
+    none: 'Geen', notChosen: 'Niet gekozen', dancer: ' danseres', dancers: ' danseressen', onRequest: '5+ (op aanvraag)', hours: ' uur', ws: ' — 1,5 uur',
+    notFilled: 'Nog niet ingevuld', yes: 'Ja', no: 'Nee', djNote: 'DJ gekozen (2,5 uur, +€400,-). ', name: 'Vul je voornaam in.',
+    mail: 'Vul een geldig e-mailadres in.', date: 'Vul de datum van je evenement in.', busy: 'Bezig met versturen…', btn: 'Keuze doorgeven',
+    fail: 'Versturen lukte niet. Probeer het opnieuw of mail ons via info@lanegra-entertainment.nl.', post: 'stuur-offerte.php',
+    extras: ['Vuurspuwer / Limboshow', 'Steelband 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2,5 uur']
+  };
   var PB = { 'Basic 2 uur': 195, 'Basic 4 uur': 250, 'Silver 2 uur': 250, 'Silver 4 uur': 300, 'Exclusive 2 uur': 550, 'Exclusive 4 uur': 750 };
   var EXTRAS = [
-    ['extra-vuur', 'Vuurspuwer / Limboshow', 550],
-    ['extra-steel', 'Steelband 45 min', 550],
-    ['extra-latin-band', 'Latin Entertainment Band — 2x 45 min', 1500],
-    ['extra-dj', 'DJ — 2,5 uur', 400]
+    ['extra-vuur', L.extras[0], 550],
+    ['extra-steel', L.extras[1], 550],
+    ['extra-latin-band', L.extras[2], 1500],
+    ['extra-dj', L.extras[3], 400]
   ];
 
   function euro(n) {
@@ -24,7 +38,7 @@
   function calc() {
     var pk = checked('pakket'), d = checked('danseressen'), pb = checked('photobooth'), huur = checked('pb-huur');
     var c = {
-      pakket: pk ? pk.value : 'Niet gekozen', pakketPrijs: pk ? parseInt(pk.dataset.prijs, 10) || 0 : 0,
+      pakket: pk ? pk.value : L.notChosen, pakketPrijs: pk ? parseInt(pk.dataset.prijs, 10) || 0 : 0,
       extras: [], extrasPrijs: 0, flags: {},
       dans: d ? d.value : '0', dansPrijs: d ? parseInt(d.dataset.dansPrijs, 10) || 0 : 0,
       pb: pb ? pb.value : 'Geen', huur: huur ? huur.value : '2 uur',
@@ -45,15 +59,18 @@
     return c;
   }
 
+  // De huurduur-waarden blijven "2 uur"/"4 uur" (sleutels van PB); alleen de tekst wordt vertaald
+  function huurTekst(h) { return h.replace(' uur', L.hours); }
+
   function render() {
     var c = calc();
     var set = function (id, v) { $(id).textContent = v; };
     set('sum-pakket', c.pakket);
-    set('sum-extras', c.extras.length ? c.extras.join(' + ') : 'Geen');
-    set('sum-dans', c.dans === '0' ? 'Geen' : c.dans === '5+' ? '5+ (op aanvraag)' : c.dans + ' danseres' + (c.dans === '1' ? '' : 'sen'));
-    set('sum-pb', c.pb === 'Geen' ? 'Geen' : c.pb + ' — ' + c.huur);
-    set('sum-workshop', c.ws.length ? c.ws.join(', ') + ' — 1,5 uur' : 'Geen');
-    set('sum-km', c.km ? c.kmEnkel + ' km × 2 = ' + c.km + ' km × € 0,23' : 'Nog niet ingevuld');
+    set('sum-extras', c.extras.length ? c.extras.join(' + ') : L.none);
+    set('sum-dans', c.dans === '0' ? L.none : c.dans === '5+' ? L.onRequest : c.dans + (c.dans === '1' ? L.dancer : L.dancers));
+    set('sum-pb', c.pb === 'Geen' ? L.none : c.pb + ' — ' + huurTekst(c.huur));
+    set('sum-workshop', c.ws.length ? c.ws.join(', ') + L.ws : L.none);
+    set('sum-km', c.km ? c.kmEnkel + ' km × 2 = ' + c.km + ' km × € 0,23' : L.notFilled);
     set('sum-reis', euro(c.reis));
     var rk = $('f-reiskosten'); if (rk) rk.value = c.km ? euro(c.reis) : '';
     set('sum-sub', euro(c.sub));
@@ -75,9 +92,9 @@
   btn.addEventListener('click', function () {
     var naam = val('f-naam'), lnaam = val('f-achternaam'), email = val('f-email'), datum = val('f-datum');
     err.hidden = true;
-    if (!naam) return fail('Vul je voornaam in.', $('f-naam'));
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail('Vul een geldig e-mailadres in.', $('f-email'));
-    if (!datum) return fail('Vul de datum van je evenement in.', $('f-datum'));
+    if (!naam) return fail(L.name, $('f-naam'));
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail(L.mail, $('f-email'));
+    if (!datum) return fail(L.date, $('f-datum'));
 
     var c = calc();
     var d = new FormData();
@@ -86,18 +103,19 @@
     d.append('telefoon', val('f-tel') || '-');
     d.append('datum_evenement', datum);
     d.append('locatie', val('f-locatie') || '-');
-    d.append('kilometers', c.km ? c.km + ' km heen en terug (2 × ' + c.kmEnkel + ' km)' : '-');
+    d.append('kilometers', c.km ? c.km + (EN ? ' km return (2 × ' : ' km heen en terug (2 × ') + c.kmEnkel + ' km)' : '-');
     d.append('reiskosten', euro(c.reis));
     d.append('pakket', c.pakket);
-    d.append('danseressen', c.dans);
-    d.append('vuurspuwer', c.flags['extra-vuur'] ? 'Ja (+€550,-)' : 'Nee');
-    d.append('steelband', c.flags['extra-steel'] ? 'Ja (+€550,-)' : 'Nee');
-    d.append('latin_entertainment_band', c.flags['extra-latin-band'] ? 'Ja (+€1.500,- / 2x 45 min)' : 'Nee');
-    d.append('dj', c.flags['extra-dj'] ? 'Ja (+€400,- / 2,5 uur)' : 'Nee');
-    d.append('photobooth', c.pb === 'Geen' ? 'Geen' : c.pb + ' ' + c.huur);
-    d.append('workshop', c.ws.length ? c.ws.join(', ') + ' / 1.5 uur (+€200,-)' : 'Geen');
+    d.append('danseressen', c.dans === '0' ? '0' : c.dans + (c.dans === '1' ? L.dancer : L.dancers));
+    d.append('vuurspuwer', c.flags['extra-vuur'] ? L.yes + ' (+€550,-)' : L.no);
+    d.append('steelband', c.flags['extra-steel'] ? L.yes + ' (+€550,-)' : L.no);
+    d.append('latin_entertainment_band', c.flags['extra-latin-band'] ? L.yes + ' (+€1.500,- / 2x 45 min)' : L.no);
+    d.append('dj', c.flags['extra-dj'] ? L.yes + ' (+€400,-)' : L.no);
+    d.append('photobooth', c.pb === 'Geen' ? L.none : c.pb + ' ' + huurTekst(c.huur));
+    d.append('workshop', c.ws.length ? c.ws.join(', ') + ' / 1.5' + L.hours + ' (+€200,-)' : L.none);
+    d.append('lang', EN ? 'en' : 'nl');
     var opm = val('f-opmerking') || '-';
-    if (c.flags['extra-dj']) opm = 'DJ gekozen (2,5 uur, +€400,-). ' + (opm === '-' ? '' : opm);
+    if (c.flags['extra-dj']) opm = L.djNote + (opm === '-' ? '' : opm);
     d.append('opmerkingen', opm.trim() || '-');
     d.append('subtotaal_excl_btw', euro(c.sub));
     d.append('btw_9pct', euro(c.btw));
@@ -106,8 +124,8 @@
     d.append('t', String(Math.round((Date.now() - geladen) / 1000)));   // seconden op de pagina
     d.append('_subject', 'Boeking: ' + (naam + ' ' + lnaam).trim() + ' — ' + datum);
 
-    btn.disabled = true; btn.textContent = 'Bezig met versturen…';
-    fetch('stuur-offerte.php', { method: 'POST', body: d })
+    btn.disabled = true; btn.textContent = L.busy;
+    fetch(L.post, { method: 'POST', body: d })
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (!res || !res.ok) throw new Error('not ok');
@@ -115,8 +133,8 @@
         ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
       })
       .catch(function () {
-        btn.disabled = false; btn.textContent = 'Keuze doorgeven';
-        fail('Versturen lukte niet. Probeer het opnieuw of mail ons via info@lanegra-entertainment.nl.');
+        btn.disabled = false; btn.textContent = L.btn;
+        fail(L.fail);
       });
   });
 })();
