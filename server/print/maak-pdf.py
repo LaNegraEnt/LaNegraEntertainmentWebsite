@@ -47,12 +47,12 @@ li::marker { color: #f5a623; }
 
 FAN = """<svg class="fan" viewBox="0 0 100 100"><g transform="translate(100,0)"><path d="M0 0 L0.0 100.0 A100 100 0 0 1 -17.4 98.5 Z" fill="#f5c518"/><path d="M0 0 L-17.4 98.5 A100 100 0 0 1 -34.2 94.0 Z" fill="#42b8d8"/><path d="M0 0 L-34.2 94.0 A100 100 0 0 1 -50.0 86.6 Z" fill="#d94f2b"/><path d="M0 0 L-50.0 86.6 A100 100 0 0 1 -64.3 76.6 Z" fill="#3a9a3a"/><path d="M0 0 L-64.3 76.6 A100 100 0 0 1 -76.6 64.3 Z" fill="#f5a623"/><path d="M0 0 L-76.6 64.3 A100 100 0 0 1 -86.6 50.0 Z" fill="#42b8d8"/><path d="M0 0 L-86.6 50.0 A100 100 0 0 1 -94.0 34.2 Z" fill="#d94f2b"/><path d="M0 0 L-94.0 34.2 A100 100 0 0 1 -98.5 17.4 Z" fill="#f5c518"/><path d="M0 0 L-98.5 17.4 A100 100 0 0 1 -100.0 0.0 Z" fill="#3a9a3a"/></g></svg>"""
 
-def foot():
-    return ('<div class="foot"><div class="meta"><span>KVK 67106951 &nbsp;·&nbsp; VAT NL002420332B84</span><span>Feel the Rhythm. Live the Experience.</span></div>'
+def foot(nl=False):
+    return ('<div class="foot"><div class="meta"><span>KVK 67106951 &nbsp;·&nbsp; ' + ('BTW' if nl else 'VAT') + ' NL002420332B84</span><span>Feel the Rhythm. Live the Experience.</span></div>'
             '<div class="stripe"></div><div class="bar"><span>info@lanegra-entertainment.nl</span><span>+31 6 25 17 80 50</span><span>lanegra-entertainment.nl</span></div></div>')
 
-def page(body):
-    return f'<section class="page">{FAN}<img class="logo" src="{img("assets/img/logo.png")}">{body}{foot()}</section>'
+def page(body, nl=False):
+    return f'<section class="page">{FAN}<img class="logo" src="{img("assets/img/logo.png")}">{body}{foot(nl)}</section>'
 
 def sect(title, color, items):
     return f'<h2><i style="background:{color}"></i>{title}</h2><ul>' + ''.join(f'<li>{x}</li>' for x in items) + '</ul>'
@@ -123,8 +123,60 @@ def presskit():
           + '<div class="dark"><h3>Booking &amp; contact</h3><p><b>Elgin Felipa</b> · Manager<br>info@lanegra-entertainment.nl · +31 6 25 17 80 50 (WhatsApp)<br>lanegra-entertainment.nl · Instagram @lanegraentertainment</p></div>')
     return page(p1) + page(p2)
 
-def maak(naam, inhoud, titel):
-    doc = f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{html.escape(titel)}</title><style>{CSS}</style></head><body>{inhoud}</body></html>'
+def partners():
+    """Partnerprogramma (NL) zonder prijzen; de versie met prijzen staat in server/print/partnerprogramma-met-prijzen.pdf."""
+    voor = ''.join(f'<div class="pcard"><i style="background:{c}"></i><b>{t}</b><span>{d}</span></div>' for c, t, d in [
+        (Y, 'Trouwlocaties', 'Een vaste partner voor Caribische sfeer, van ceremonie tot feest.'),
+        (B, 'Weddingplanners', 'Eén aanspreekpunt voor steelband, samba-entree, brassband en DJ.'),
+        (G, 'Eventbureaus', 'Onze acts doorboeken voor bedrijfsfeesten en festivals, met jouw marge.'),
+        (O, 'Feest- en eventlocaties', 'Arrangementen en themafeesten compleet met live entertainment.')])
+    p1 = ('<div class="kicker">Partnerprogramma</div><h1>Samen meer feest</h1>'
+          '<p class="intro lead">Werk je met bruidsparen, bedrijven of evenementen? Als partner van La Negra Entertainment bied je jouw klanten Caribisch en Latin '
+          'live-entertainment, zonder gedoe. Je boekt onze acts voor je klanten met <b>10% partnerkorting</b> (vanaf je 5e boeking per jaar <b>15%</b>) en bepaalt zelf je verkoopprijs.</p>'
+          f'<div class="photos"><img src="{img("assets/img/steelband.jpg")}" style="height:60mm"><img src="{img("assets/img/brassband-danseressen.jpg")}" style="height:60mm;object-position:50% 40%"></div>'
+          f'<h2 style="font-size:16pt;margin-top:2mm">Voor wie</h2><div class="pgrid">{voor}</div>')
+    pk = ''.join(f'<div class="prow" style="background:{bg}"><b>{n}</b><span>{d}</span><em>offerte op maat</em></div>' for n, d, bg in [
+        ('Caribbean Wedding', 'Steelband, samba-entree met 2 danseressen en DJ', '#fff7dc'),
+        ('Fiesta Bedrijfsfeest', 'Brassband (8), 2 samba danseressen en DJ', '#e3f4f9'),
+        ('Tropisch Zomerfeest', 'Steelband en limboshow met vuurspuwers', '#f3f4f3'),
+        ('Carnaval &amp; Optocht', 'Lopende brassband (7) met 2 samba danseressen', '#fff7dc')])
+    stappen = ''.join(f'<div class="pstep"><span>{i}</span><div><b>{t}</b><p>{d}</p></div></div>' for i, t, d in [
+        (1, 'Meld je aan', 'We maken kennis en spreken af hoe je klanten bij ons terechtkomen.'),
+        (2, 'Boek ons voor je klant', 'Je vraagt een offerte aan en krijgt direct je partnerprijs; aan je klant bied je ons aan voor jouw eigen prijs.'),
+        (3, 'Wij verzorgen het feest', 'Wij treden op en stemmen alles af met jou of rechtstreeks met je klant, zoals jij wilt.')])
+    p2 = ('<h2 style="font-size:16pt;margin-top:0">Wat je krijgt</h2><ul class="vinkjes">'
+          + ''.join(f'<li>{x}</li>' for x in ['10% partnerkorting op al onze acts en pakketten (excl. btw en reiskosten) als je ons boekt voor je klanten',
+              '15% korting vanaf je 5e boeking in een kalenderjaar', 'Jij bepaalt de prijs voor je klant: je boekt en factureert zelf, dus de marge is voor jou',
+              'Binnen één werkdag een voorstel op maat voor jouw klant', 'Voorrang bij drukke data zoals carnaval en het trouwseizoen',
+              "Foto's, video's en teksten om onze acts op je eigen kanalen aan te bieden", 'Eén vaste contactpersoon die je locatie en werkwijze kent'])
+          + '</ul><h2 style="font-size:16pt">Zo werkt het</h2>' + stappen
+          + '<h2 style="font-size:16pt">Populaire pakketten voor jouw klanten</h2>' + pk
+          + '<p class="klein">Je partnerprijs ontvang je binnen één werkdag in een voorstel op maat: 10% onder onze standaardprijs (15% vanaf je 5e boeking per jaar), '
+            'excl. 9% btw en reiskosten. We leggen de afspraken vast in een korte partnerovereenkomst.</p>'
+          + '<div class="dark pdark"><div><h3>Partner worden?</h3><p>Mail info@lanegra-entertainment.nl of bel/app <span style="white-space:nowrap">+31 6 25 17 80 50</span><br>Meer info: lanegra-entertainment.nl/partners.html</p></div>'
+            '<span class="pill">Elgin Felipa · Manager</span></div>')
+    return page(p1, True) + page(p2, True)
+
+PCSS = """
+.photos img { box-shadow: none; }
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.pcard { background: #f3f4f3; border-radius: 3mm; padding: 4mm 5mm 4mm 11mm; position: relative; font-size: 9.5pt; }
+.pcard i { position: absolute; left: 5mm; top: 5.2mm; width: 3.2mm; height: 3.2mm; border-radius: 50%; }
+.pcard b { display: block; font-size: 11pt; margin-bottom: 1mm; } .pcard span { color: #444; }
+.vinkjes { list-style: none; padding: 0; } .vinkjes li { position: relative; padding-left: 7mm; margin-bottom: 1mm; font-size: 9.8pt; }
+.vinkjes li::before { content: '✓'; position: absolute; left: 0; color: #d94f2b; font-weight: 700; }
+.pstep { display: flex; gap: 4mm; align-items: flex-start; margin-bottom: 2mm; }
+.pstep > span { flex: none; width: 7mm; height: 7mm; border-radius: 50%; background: #f5c518; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 9.5pt; }
+.pstep b { font-size: 10.5pt; } .pstep p { margin: .5mm 0 0; font-size: 9.6pt; color: #444; }
+.prow { display: grid; grid-template-columns: 42mm 1fr auto; gap: 4mm; align-items: center; border-radius: 3mm; padding: 3.2mm 5mm; margin-bottom: 2mm; font-size: 9.6pt; }
+.prow em { font-style: normal; font-weight: 700; color: #d94f2b; white-space: nowrap; }
+.klein { font-size: 8.6pt; color: #666; margin-top: 2mm; }
+.pdark { display: flex; justify-content: space-between; align-items: center; gap: 6mm; margin-top: 4mm; padding: 4mm 7mm; }
+.pill { background: #f5c518; color: #222; font-weight: 700; border-radius: 6mm; padding: 2.5mm 6mm; white-space: nowrap; font-size: 10pt; }
+"""
+
+def maak(naam, inhoud, titel, lang='en', extra_css=''):
+    doc = f'<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><title>{html.escape(titel)}</title><style>{CSS}{extra_css}</style></head><body>{inhoud}</body></html>'
     with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False) as f:
         f.write(doc); tmp = f.name
     out = ROOT / 'downloads' / naam
@@ -137,3 +189,4 @@ if __name__ == '__main__':
     maak('rider-en.pdf', rider_algemeen(), 'Technical rider – La Negra Entertainment')
     maak('rider-salsa-brassband-en.pdf', rider_salsa(), 'Technical rider Salsa Brassband – La Negra Entertainment')
     maak('presskit-salsa-brassband.pdf', presskit(), 'Press kit Salsa Brassband – La Negra Entertainment')
+    maak('partnerprogramma.pdf', partners(), 'Partnerprogramma – La Negra Entertainment', 'nl', PCSS)
