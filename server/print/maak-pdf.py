@@ -133,7 +133,7 @@ def partners():
     p1 = ('<div class="kicker">Partnerprogramma</div><h1>Samen meer feest</h1>'
           '<p class="intro lead">Werk je met bruidsparen, bedrijven of evenementen? Als partner van La Negra Entertainment bied je jouw klanten Caribisch en Latin '
           'live-entertainment, zonder gedoe. Je boekt onze acts voor je klanten met <b>10% partnerkorting</b> (vanaf je 5e boeking per jaar <b>15%</b>) en bepaalt zelf je verkoopprijs.</p>'
-          f'<div class="photos"><img src="{img("assets/img/steelband.jpg")}" style="height:60mm"><img src="{img("assets/img/brassband-danseressen.jpg")}" style="height:60mm;object-position:50% 40%"></div>'
+          f'<div class="photos"><img src="{img("images/bruiloft-band-strikdas.jpg")}" style="height:60mm;object-position:50% 45%"><img src="{img("images/brassband-danseressen-trappen.jpg")}" style="height:60mm;object-position:50% 55%"></div>'
           f'<h2 style="font-size:16pt;margin-top:2mm">Voor wie</h2><div class="pgrid">{voor}</div>')
     pk = ''.join(f'<div class="prow" style="background:{bg}"><b>{n}</b><span>{d}</span><em>offerte op maat</em></div>' for n, d, bg in [
         ('Caribbean Wedding', 'Steelband, samba-entree met 2 danseressen en DJ', '#fff7dc'),
