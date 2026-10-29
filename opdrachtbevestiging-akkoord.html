@@ -73,7 +73,7 @@
     <div class="footer-col"><b>Contact</b>
       <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a>
       <a href="tel:+31625178050">+31 6 25 17 80 50</a>
-      <a href="offerte-rider.html">Offerte samenstellen</a>
+      <a href="offerte-rider.html">Offerte samenstellen</a><a href="pakketten.html">Pakketten</a><a href="partners.html">Partner worden</a>
       <a href="fotos.html">Foto's</a>
       <a href="rider.html">Technische rider</a><a href="regio/index.html">Werkgebied</a>
       <a href="algemene-voorwaarden.html">Algemene voorwaarden</a>
@@ -101,9 +101,13 @@
   var right;
   if (/\d/.test(q('totaal'))) {
     right = row('Reiskosten', q('reiskosten')) + row('Subtotaal excl. btw', q('subtotaal')) + row('Btw (9%)', q('btw')) + row('Totaal incl. btw', q('totaal'), true) +
-      row('Aanbetaling nu', aanbetaling);
+      row('Reserveringsaanbetaling nu', aanbetaling);
+    // Betalen in 3 delen (voorwaarden art. 8): € 50 nu, aanvulling tot 50% binnen 14 dagen, de rest na het optreden
+    function eur(n) { return '€ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
     var totaal = parseFloat(q('totaal').replace(/[^\d,]/g, '').replace(',', '.'));
-    if (totaal > 50) right += row('Restbetaling', '€ ' + (totaal - 50).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+    var aan = Math.min(50, totaal), voor = Math.max(Math.round(totaal * 50) / 100 - aan, 0);
+    if (voor > 0) right += row('Voorschot tot 50% (binnen 14 dagen)', eur(voor));
+    if (totaal > 50) right += row('Restbetaling (uiterlijk 7 dagen na het optreden)', eur(Math.max(totaal - aan - voor, 0)));
   } else {
     // Reservering via de agenda: nog geen pakketprijs, alleen de aanbetaling om de datum vast te leggen
     right = row('Aanbetaling nu', aanbetaling, true) +

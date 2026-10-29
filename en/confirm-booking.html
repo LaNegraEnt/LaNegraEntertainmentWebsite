@@ -105,9 +105,13 @@
   var right;
   if (/\d/.test(q('totaal'))) {
     right = row('Travel costs', q('reiskosten')) + row('Subtotal excl. VAT', q('subtotaal')) + row('VAT (9%)', q('btw')) + row('Total incl. VAT', q('totaal'), true) +
-      row('Deposit now', aanbetaling);
+      row('Reservation deposit now', aanbetaling);
+    // Payment in 3 parts (terms art. 8): € 50 now, top-up to 50% within 14 days, the balance after the event
+    function eur(n) { return '€ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
     var totaal = parseFloat(q('totaal').replace(/[^\d,]/g, '').replace(',', '.'));
-    if (totaal > 50) right += row('Balance', '€ ' + (totaal - 50).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
+    var aan = Math.min(50, totaal), voor = Math.max(Math.round(totaal * 50) / 100 - aan, 0);
+    if (voor > 0) right += row('Advance up to 50% (within 14 days)', eur(voor));
+    if (totaal > 50) right += row('Balance (within 7 days after the event)', eur(Math.max(totaal - aan - voor, 0)));
   } else {
     right = row('Deposit now', aanbetaling, true) +
       '<p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6E6A">The deposit secures your date. We agree the total and the balance with you afterwards in your custom quote.</p>';

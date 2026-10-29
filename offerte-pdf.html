@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Offerte | La Negra Entertainment</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<style>
+@font-face { font-family: 'Gallant'; src: url('assets/fonts/Gallant-Regular.woff2') format('woff2'); font-weight: 100 500; }
+@font-face { font-family: 'Gallant'; src: url('assets/fonts/Gallant-Bold.woff2') format('woff2'); font-weight: 600 900; }
+:root { --sun:#FDD22C; --sun2:#FBAD08; --sky:#43BCD5; --leaf:#429B25; --punch:#D74B27; --ink:#1F231E; --ink2:#4B4D4B; --ink3:#777; --row:#F6F7F7; --tint:#FFF6D2; --tintb:#E3F5F9; --line:#E6E7E6; }
+* { box-sizing: border-box; }
+html { background: #DADCD8; }
+body { margin: 0; font-family: 'Gallant', system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--ink); font-size: 10pt; line-height: 1.45; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.bar { position: sticky; top: 0; z-index: 5; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 12px 16px; background: var(--ink); }
+.bar button { font: inherit; font-weight: 700; font-size: 14px; border: 0; border-radius: 30px; padding: 10px 20px; cursor: pointer; background: var(--sun); color: var(--ink); }
+.bar button.ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 1.5px #fff; }
+.bar span { color: #BFC1BE; font-size: 13px; align-self: center; }
+.page { position: relative; width: 210mm; min-height: 297mm; margin: 20px auto; background: #fff; padding: 11mm 16mm 32mm; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.15); }
+.fan { position: absolute; top: 0; right: 0; width: 40mm; }
+.logo { width: 44mm; display: block; }
+.meta { display: flex; gap: 8mm; margin: 4mm 0 4mm; padding-bottom: 3mm; border-bottom: 1px solid var(--line); }
+.meta div { padding: 0; }
+.meta small, .lbl { display: block; font-size: 7pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); }
+.meta b { font-size: 10.5pt; }
+.kicker { font-size: 8pt; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--leaf); }
+h1 { font-size: 20pt; line-height: 1.1; margin: 1mm 0 2mm; }
+.uline { width: 16mm; height: 1.4mm; border-radius: 1mm; background: var(--sun); margin-bottom: 4mm; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin-bottom: 4mm; }
+.box { border-radius: 3mm; padding: 3mm 4mm; }
+.box.y { background: var(--tint); } .box.g { background: var(--row); }
+.box .lbl { color: var(--punch); margin-bottom: 1.5mm; }
+.box p { margin: 0; }
+h2 { font-size: 12.5pt; margin: 0 0 2mm; display: flex; align-items: center; gap: 3mm; }
+h2 i { width: 6mm; height: 6mm; border-radius: 50%; display: inline-block; flex: none; }
+.desc { background: var(--row); border-radius: 3mm; padding: 3mm 4mm; white-space: pre-wrap; margin-bottom: 4mm; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 4mm; }
+td { padding: 1.2mm 3mm; border-bottom: 1px solid var(--line); }
+td:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.tot td { background: var(--sun); font-weight: 800; font-size: 12pt; border: 0; }
+tr.tot td:first-child { border-radius: 2mm 0 0 2mm; } tr.tot td:last-child { border-radius: 0 2mm 2mm 0; }
+.pay { display: grid; gap: 1.6mm; margin-bottom: 4mm; }
+.pay div { display: grid; grid-template-columns: 1fr auto; gap: 1mm 4mm; border-radius: 2.5mm; padding: 1.6mm 4mm; }
+.pay b { font-size: 10.5pt; } .pay small { grid-column: 1; color: var(--ink2); font-size: 8.5pt; } .pay em { font-style: normal; font-weight: 800; grid-row: 1 / span 2; grid-column: 2; align-self: center; font-variant-numeric: tabular-nums; }
+.cta { margin-top: 1mm; display: flex; justify-content: space-between; align-items: center; gap: 5mm; background: var(--ink); color: #fff; border-radius: 3mm; padding: 4mm 5mm; }
+.cta b { font-size: 13pt; display: block; } .cta p { margin: 0; color: #BFC1BE; font-size: 9pt; }
+.cta a { background: var(--sun); color: var(--ink); text-decoration: none; font-weight: 800; border-radius: 30px; padding: 3mm 6mm; white-space: nowrap; }
+.small { font-size: 7.5pt; color: var(--ink2); margin: 3mm 0 0; }
+.foot { position: absolute; left: 0; right: 0; bottom: 0; }
+.foot .t { display: flex; justify-content: space-between; padding: 0 18mm 3mm; font-size: 7pt; color: var(--ink2); }
+.foot .c { display: flex; height: 2mm; } .foot .c i { flex: 1; }
+.foot .p { background: var(--punch); color: #fff; height: 15mm; display: flex; align-items: center; justify-content: center; gap: 8mm; font-size: 9pt; }
+.foot .p span + span::before { content: '•'; color: var(--sun); margin-right: 8mm; }
+@media screen and (max-width: 820px) { .page { width: auto; min-height: 0; margin: 12px; padding: 18px 16px 120px; } .two { grid-template-columns: 1fr; } .meta { flex-wrap: wrap; gap: 4mm 8mm; } .fan { width: 90px; } .foot .t { padding: 0 16px 6px; } .foot .p { flex-wrap: wrap; height: auto; padding: 8px; gap: 4px 12px; } .foot .p span + span::before { margin-right: 12px; } }
+@media print {
+  @page { size: A4; margin: 0; }
+  html { background: #fff; } .bar { display: none; }
+  .page { margin: 0; box-shadow: none; width: 210mm; height: 297mm; }
+}
+</style>
+</head>
+<body>
+<div class="bar"><button type="button" id="printBtn">Download als PDF</button><button type="button" class="ghost" id="copyBtn">Kopieer link naar deze offerte</button><span>Kies bij printen “Opslaan als PDF”.</span></div>
+<div class="page">
+  <img class="fan" src="assets/img/doc/fan-corner.png" alt="">
+  <img class="logo" src="assets/img/logo.png" alt="La Negra Entertainment">
+  <div class="meta">
+    <div><small>Offertenummer</small><b id="nr">–</b></div>
+    <div><small>Datum</small><b id="vandaag">–</b></div>
+    <div><small>Geldig tot</small><b id="geldig">–</b></div>
+  </div>
+  <span class="kicker">Offerte</span>
+  <h1 id="titel">Caribisch entertainment voor jouw feest</h1>
+  <div class="uline"></div>
+  <div class="two">
+    <div class="box y"><span class="lbl">Voor</span><p id="klant"></p></div>
+    <div class="box g"><span class="lbl">Evenement</span><p id="event"></p></div>
+  </div>
+  <h2><i style="background: var(--sky)"></i>Entertainment</h2>
+  <div class="desc" id="pakket"></div>
+  <h2><i style="background: var(--punch)"></i>Prijs</h2>
+  <table id="prijs"></table>
+  <h2><i style="background: var(--leaf)"></i>Betalen in 3 stappen</h2>
+  <div class="pay" id="pay"></div>
+  <div class="cta"><div><b>Akkoord? Leg je datum vast.</b><p>Geef online akkoord en betaal € 50,- om je datum vast te leggen. Bedragen incl. 9% btw; offerte 14 dagen geldig.</p></div><a id="akkoordLink" href="opdrachtbevestiging-akkoord.html">Geef akkoord →</a></div>
+  <div class="foot">
+    <div class="t"><span>KVK 67106951 · BTW NL002420332B84 · Onze algemene voorwaarden zijn van toepassing</span><span>Feel the Rhythm. Live the Experience.</span></div>
+    <div class="c"><i style="background: var(--sun)"></i><i style="background: var(--sky)"></i><i style="background: var(--leaf)"></i><i style="background: var(--sun2)"></i></div>
+    <div class="p"><span>info@lanegra-entertainment.nl</span><span>+31 6 25 17 80 50</span><span>lanegra-entertainment.nl</span></div>
+  </div>
+</div>
+<script>
+(function () {
+  var P = new URL(location.href).searchParams;
+  function q(k) { var v = P.get(k); return v && v.trim() && v.trim() !== '-' ? v.trim() : ''; }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function num(x) { var t = String(x).replace(/[^0-9,.-]/g, ''); if (!t) return NaN; return parseFloat(t.replace(/\./g, '').replace(',', '.')); }
+  function eur(n) { return '€ ' + n.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function d(dt) { return dt.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+  var now = new Date(), until = new Date(now.getTime() + 14 * 864e5);
+  var pad = function (n) { return String(n).padStart(2, '0'); };
+  document.getElementById('nr').textContent = q('offertenr') || ('LN-O-' + now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate()) + '-' + pad(now.getHours()) + pad(now.getMinutes()));
+  document.getElementById('vandaag').textContent = d(now);
+  document.getElementById('geldig').textContent = d(until);
+  var naam = q('naam') || 'Opdrachtgever';
+  document.getElementById('klant').innerHTML = '<b>' + esc(naam) + '</b>' + (q('email') ? '<br>' + esc(q('email')) : '') + (q('tel') ? '<br>' + esc(q('tel')) : '');
+  document.getElementById('event').innerHTML = '<b>' + esc(q('datum') || 'Datum in overleg') + '</b>' + (q('locatie') ? '<br>' + esc(q('locatie')) : '');
+  document.getElementById('pakket').textContent = [q('pakket'), q('extras') && q('extras') !== q('pakket') ? q('extras') : ''].filter(Boolean).join('\n\n') || 'Entertainment op maat';
+  var sub = num(q('subtotaal')), reis = num(q('reiskosten')), btw = num(q('btw')), tot = num(q('totaal'));
+  var rows = '';
+  if (!isNaN(sub)) rows += '<tr><td>Entertainment (excl. btw)</td><td>' + eur(sub) + '</td></tr>';
+  if (!isNaN(reis)) rows += '<tr><td>Reiskosten (excl. btw)</td><td>' + eur(reis) + '</td></tr>';
+  if (!isNaN(sub)) rows += '<tr><td>Subtotaal excl. btw</td><td>' + eur(sub + (isNaN(reis) ? 0 : reis)) + '</td></tr>';
+  if (!isNaN(btw)) rows += '<tr><td>Btw 9%</td><td>' + eur(btw) + '</td></tr>';
+  rows += '<tr class="tot"><td>Totaal incl. btw</td><td>' + (isNaN(tot) ? 'Volgens afspraak' : eur(tot)) + '</td></tr>';
+  document.getElementById('prijs').innerHTML = rows;
+  var aan = num(q('aanbetaling')); if (isNaN(aan)) aan = 50;
+  var pay = [['var(--tint)', 'Reserveringsaanbetaling', 'Bij akkoord, online. Hiermee ligt je datum vast.', eur(aan)]];
+  if (!isNaN(tot)) {
+    var half = Math.round(tot * 50) / 100, a = Math.min(aan, tot), v = Math.max(half - a, 0);
+    pay.push(['var(--tintb)', 'Voorschot (aanvulling tot 50%)', 'Binnen 14 dagen na akkoord, uiterlijk 14 dagen vóór het evenement', eur(v)]);
+    pay.push(['var(--row)', 'Restbetaling (50%)', 'Uiterlijk 7 dagen na het optreden', eur(Math.max(tot - a - v, 0))]);
+  }
+  document.getElementById('pay').innerHTML = pay.map(function (p) { return '<div style="background:' + p[0] + '"><b>' + p[1] + '</b><small>' + p[2] + '</small><em>' + p[3] + '</em></div>'; }).join('');
+  var ak = new URL('opdrachtbevestiging-akkoord.html', location.href); ak.search = location.search;
+  document.getElementById('akkoordLink').href = ak.toString();
+  document.title = 'Offerte ' + naam + ' | La Negra Entertainment';
+  document.getElementById('printBtn').onclick = function () { window.print(); };
+  document.getElementById('copyBtn').onclick = function () {
+    var b = this; navigator.clipboard.writeText(location.href).then(function () { b.textContent = 'Link gekopieerd'; setTimeout(function () { b.textContent = 'Kopieer link naar deze offerte'; }, 1800); });
+  };
+})();
+</script>
+</body>
+</html>

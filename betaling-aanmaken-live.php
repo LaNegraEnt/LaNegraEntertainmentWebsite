@@ -38,7 +38,8 @@ if ($vorige) {
     $o += [
         'order_id'     => 'LN-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(4))),
         'aanbetaling'  => bk_euro(BK_AANBETALING),
-        'restbetaling' => preg_match('/\d/', $o['totaal']) ? bk_euro(max(bk_euro_to_float($o['totaal']) - BK_AANBETALING, 0)) : 'Volgens offerte',
+        'voorschot'    => preg_match('/\d/', $o['totaal']) ? bk_euro(bk_termijnen(bk_euro_to_float($o['totaal']))['voorschot']) : '-',
+        'restbetaling' => preg_match('/\d/', $o['totaal']) ? bk_euro(bk_termijnen(bk_euro_to_float($o['totaal']))['rest']) : 'Volgens offerte',
         'link_ok'      => $verified,
         'status'       => 'akkoord',
         'created_at'   => date('c'),

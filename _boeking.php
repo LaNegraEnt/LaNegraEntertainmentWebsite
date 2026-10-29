@@ -54,6 +54,16 @@ function bk_voornaam(string $naam): string {
     return explode(' ', trim($naam))[0] ?? '';
 }
 
+/**
+ * Betalen in drie delen (algemene voorwaarden art. 8): € 50 reserveringsaanbetaling nu,
+ * aanvulling tot 50% binnen 14 dagen (voorschot), de rest uiterlijk 7 dagen na het optreden.
+ */
+function bk_termijnen(float $totaal): array {
+    $aan = min(BK_AANBETALING, $totaal);
+    $voorschot = max(round($totaal * 0.5, 2) - $aan, 0);
+    return ['aanbetaling' => $aan, 'voorschot' => $voorschot, 'rest' => max(round($totaal - $aan - $voorschot, 2), 0)];
+}
+
 /** Taal van de klant: 'en' via de Engelse offertepagina, anders 'nl'. Hoort niet bij de handtekening (alleen weergave). */
 function bk_lang($o): string {
     $l = is_array($o) ? ($o['lang'] ?? '') : (string)$o;
@@ -271,8 +281,9 @@ function bk_bedragen_card(array $o, bool $metBetaling, string $lang = 'nl'): str
         $en ? 'Total incl. VAT' : 'Totaal incl. btw'         => '<span style="color:#D74B27">' . lnc_e($o['totaal']) . '</span>',
     ];
     if ($metBetaling) {
-        $rows[$en ? 'Deposit' : 'Aanbetaling']  = lnc_e($o['aanbetaling']);
-        $rows[$en ? 'Balance' : 'Restbetaling'] = lnc_e($en && $o['restbetaling'] === 'Volgens offerte' ? 'As per quote' : $o['restbetaling']);
+        $rows[$en ? 'Reservation deposit' : 'Reserveringsaanbetaling'] = lnc_e($o['aanbetaling']);
+        if (!empty($o['voorschot']) && $o['voorschot'] !== '-') $rows[$en ? 'Advance up to 50% (within 14 days)' : 'Voorschot tot 50% (binnen 14 dagen)'] = lnc_e($o['voorschot']);
+        $rows[$en ? 'Balance (within 7 days after the event)' : 'Restbetaling (uiterlijk 7 dagen na het optreden)'] = lnc_e($en && $o['restbetaling'] === 'Volgens offerte' ? 'As per quote' : $o['restbetaling']);
     }
     return lnc_mail_card($en ? 'Amounts' : 'Bedragen', $rows);
 }
@@ -321,13 +332,14 @@ function bk_mail_bevestiging(array $o): void {
         'AANHEF' => bk_t($lang, 'Hoi ', 'Hi ') . bk_voornaam($o['naam']) . ',', 'NAAM' => $o['naam'], 'DATUM' => $datum, 'LOCATIE' => $o['locatie'],
         'PAKKET' => $o['pakket'], 'REISKOSTEN' => $o['reiskosten'], 'TOTAAL' => $o['totaal'],
         'AANBETALING' => $o['aanbetaling'], 'RESTBETALING' => $rest,
+        'VOORSCHOT' => !empty($o['voorschot']) && $o['voorschot'] !== '-' ? $o['voorschot'] : bk_t($lang, 'Volgens offerte', 'As per quote'),
     ]) ?? lnc_mail_layout(bk_t($lang, 'Je boeking is bevestigd', 'Your booking is confirmed'),
         bk_boeking_card($o, bk_t($lang, 'Je boeking', 'Your booking'), $lang) . bk_bedragen_card($o, true, $lang), bk_footer_klant($lang));
     $tekst = $lang === 'en'
         ? "Hi " . bk_voornaam($o['naam']) . ",\n\nWe have received your deposit of {$o['aanbetaling']}. Your booking for $datum is now final.\n"
-          . "Package: {$o['pakket']}\nVenue: {$o['locatie']}\nTotal incl. VAT: {$o['totaal']}\nBalance: $rest\n\nMusical greetings,\nLa Negra Entertainment\n"
+          . "Package: {$o['pakket']}\nVenue: {$o['locatie']}\nTotal incl. VAT: {$o['totaal']}\nAdvance up to 50% (within 14 days): " . ($o['voorschot'] ?? '-') . "\nBalance (within 7 days after the event): $rest\n\nMusical greetings,\nLa Negra Entertainment\n"
         : "Hoi " . bk_voornaam($o['naam']) . ",\n\nWe hebben je aanbetaling van {$o['aanbetaling']} ontvangen. Je boeking voor $datum is definitief vastgelegd.\n"
-          . "Pakket: {$o['pakket']}\nLocatie: {$o['locatie']}\nTotaal incl. btw: {$o['totaal']}\nRestbetaling: {$o['restbetaling']}\n\nMuzikale groet,\nLa Negra Entertainment\n";
+          . "Pakket: {$o['pakket']}\nLocatie: {$o['locatie']}\nTotaal incl. btw: {$o['totaal']}\nVoorschot tot 50% (binnen 14 dagen): " . ($o['voorschot'] ?? '-') . "\nRestbetaling (uiterlijk 7 dagen na het optreden): {$o['restbetaling']}\n\nMuzikale groet,\nLa Negra Entertainment\n";
     $klantOk = lnc_mail($o['email'], bk_t($lang, 'Je boeking is definitief bevestigd – La Negra Entertainment', 'Your booking is confirmed – La Negra Entertainment'),
         $html, $tekst, LNC_MAIL_TO);
 

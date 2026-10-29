@@ -597,3 +597,42 @@ button.btn { font-family: inherit; cursor: pointer; }
 .bts-mute[aria-pressed="true"] .ic-off { display: none; }
 @media (max-width: 880px) { .bts { min-height: 460px; } .bts-mute { right: 16px; bottom: 16px; } }
 @media (prefers-reduced-motion: reduce) { .bts-video { display: none; } .bts-mute { display: none; } }
+
+/* Pakketten */
+.pkg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+.pkg { display: flex; flex-direction: column; border-radius: var(--radius); background: #fff; box-shadow: inset 0 0 0 1.5px var(--line); overflow: hidden; scroll-margin-top: 100px; }
+.pkg-img { position: relative; }
+.pkg-img img { display: block; width: 100%; height: 230px; object-fit: cover; }
+.pkg-label { position: absolute; left: 18px; top: 18px; background: var(--pk); color: var(--grey); font-weight: 700; font-size: 13px; padding: 6px 12px; border-radius: 30px; }
+.pkg-body { padding: 26px; display: flex; flex-direction: column; gap: 14px; flex: 1; border-top: 5px solid var(--pk); }
+.pkg-body h2 { font-size: 28px; margin: 0; }
+.pkg-body > p { margin: 0; color: var(--grey-2); line-height: 1.6; }
+.pkg-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pkg-list li { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.pkg-list b { display: block; font-size: 16px; } .pkg-list small { display: block; color: var(--grey-3); font-size: 13px; margin-top: 2px; }
+.pkg-list em { font-style: normal; font-weight: 700; white-space: nowrap; }
+.pkg-total { display: flex; justify-content: space-between; align-items: center; background: var(--light); border-radius: 12px; padding: 14px 16px; }
+.pkg-total b { font-size: 24px; }
+.pkg-tip { display: flex; gap: 10px; align-items: flex-start; margin: 0; font-size: 14px; color: var(--grey-2); }
+.pkg-tip svg { flex: none; margin-top: 1px; }
+.pkg .actions { margin-top: auto; }
+.pkg-note { margin-top: 26px; color: var(--grey-3); font-size: 14px; }
+.pkg-minis { display: flex; flex-wrap: wrap; gap: 14px; }
+.pkg-mini { display: flex; flex-direction: column; gap: 3px; min-width: 240px; padding: 18px 22px; border-radius: var(--radius); background: var(--light); color: var(--grey); text-decoration: none; border-left: 6px solid var(--pk); transition: transform .15s; }
+.pkg-mini:hover { color: var(--grey); transform: translateY(-2px); }
+.pkg-mini small { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--grey-3); font-weight: 700; }
+.pkg-mini b { font-size: 20px; } .pkg-mini span { font-weight: 700; } .pkg-mini em { font-style: normal; font-weight: 400; font-size: 13px; color: var(--grey-3); }
+@media (max-width: 880px) { .pkg-grid { grid-template-columns: 1fr; } }
+
+/* Partners */
+.pt-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
+.pt-for { display: flex; flex-direction: column; gap: 6px; padding: 22px; border-radius: var(--radius); background: var(--light); }
+.pt-for b { font-size: 18px; } .pt-for span { color: var(--grey-2); line-height: 1.55; font-size: 15px; }
+.pt-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.pt-steps li { display: flex; gap: 14px; align-items: flex-start; }
+.pt-n { width: 34px; height: 34px; border-radius: 50%; background: var(--sunglow); font-weight: 800; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.pt-steps b { font-size: 17px; } .pt-steps p { margin: 4px 0 0; color: var(--grey-2); line-height: 1.55; }
+@media (max-width: 880px) { .pt-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .pt-grid { grid-template-columns: 1fr; } }
+/* Lange Duitse woorden netjes afbreken */
+:lang(de) h1, :lang(de) h2, :lang(de) .card-title, :lang(de) .feature-title { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
