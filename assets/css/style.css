@@ -636,3 +636,13 @@ button.btn { font-family: inherit; cursor: pointer; }
 @media (max-width: 480px) { .pt-grid { grid-template-columns: 1fr; } }
 /* Lange Duitse woorden netjes afbreken */
 :lang(de) h1, :lang(de) h2, :lang(de) .card-title, :lang(de) .feature-title { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+
+/* Veelgestelde vragen op de seizoenspagina's */
+.faq-wrap { max-width: 860px; }
+.faq-wrap .faq { display: flex; flex-direction: column; gap: 10px; }
+.faq-wrap .faq-item { background: var(--light); border-radius: 14px; padding: 4px 22px; }
+.faq-wrap .faq-item summary { cursor: pointer; font-weight: 700; font-size: 18px; padding: 16px 0; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.faq-wrap .faq-item summary::-webkit-details-marker { display: none; }
+.faq-wrap .faq-item summary::after { content: '+'; font-size: 24px; line-height: 1; color: var(--punch); }
+.faq-wrap .faq-item[open] summary::after { content: '–'; }
+.faq-wrap .faq-item p { margin: 0 0 18px; color: var(--grey-2); line-height: 1.65; }
