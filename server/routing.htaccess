@@ -2,6 +2,10 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# Eén vast adres voor Google: www gaat permanent naar het adres zonder www
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^(.*)$ https://lanegra-entertainment.nl/$1 [R=301,L]
+
 # Oude pagina's permanent doorsturen naar de nieuwe (behoudt de positie in Google)
 RewriteRule ^salsa-brassband-huren\.html$ https://lanegra-entertainment.nl/acts/salsa-brassband.html [R=301,L]
 RewriteRule ^samba-danseressen-huren\.html$ https://lanegra-entertainment.nl/acts/samba-danseressen.html [R=301,L]
