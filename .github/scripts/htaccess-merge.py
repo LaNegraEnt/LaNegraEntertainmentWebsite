@@ -3,8 +3,10 @@
 
 Gebruik: htaccess-merge.py <huidige .htaccess> <blok> [<absoluut pad naar .htpasswd-beheer>]
 Alles buiten de BEGIN/END-markeringen (bijv. de doorverwijzingen) blijft precies zoals het was;
-een eerder geplaatst blok wordt vervangen. Schrijft het resultaat naar stdout.
+een eerder geplaatst blok wordt vervangen. server/routing.htaccess komt helemaal bovenaan, zodat
+die regels vóór oudere regels op de server draaien. Schrijft het resultaat naar stdout.
 """
+import os
 import re
 import sys
 
@@ -27,5 +29,8 @@ else:
     auth = '# (geen beheerwachtwoord ingesteld)'
 blok = blok.replace('# {{BEHEER_AUTH}}', auth)
 
-zonder = re.sub(re.escape(BEGIN) + r'.*?' + re.escape(END) + r'[^\n]*\n?', '', huidig, flags=re.S).rstrip('\n')
-sys.stdout.write((zonder + '\n\n' if zonder else '') + blok + '\n')
+routing = open(os.path.join(os.path.dirname(sys.argv[2]), 'routing.htaccess'), encoding='utf-8').read().strip('\n')
+
+zonder = re.sub(re.escape(BEGIN) + r'.*?' + re.escape(END) + r'[^\n]*\n?', '', huidig, flags=re.S)
+zonder = re.sub(r'# BEGIN La Negra routing.*?# END La Negra routing[^\n]*\n?', '', zonder, flags=re.S).strip('\n')
+sys.stdout.write(routing + '\n\n' + (zonder + '\n\n' if zonder else '') + blok + '\n')

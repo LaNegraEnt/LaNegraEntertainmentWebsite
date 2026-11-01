@@ -211,7 +211,7 @@ jobs:
 
           ftp "put htaccess.server -o \"$DIR/.htaccess-backup\"; put htaccess.nieuw -o \"$DIR/.htaccess\""
           sleep 3
-          for u in / /index.html /acts/brassband.html /offerte-rider.html /lanegra-chat/lanegra-chat.js /assets/css/style.css; do
+          for u in / /index.html /en/ /de/ /es/index.html /regio/index.html /acts/brassband.html /offerte-rider.html /agenda.html /pakketten.html /fotos.html /sitemap.xml /robots.txt /sw.js /lanegra-chat/lanegra-chat.js /assets/css/style.css /assets/js/site.js /assets/img/logo.png; do
             c=$(curl -s -o /dev/null -w '%{http_code}' "$SITE$u")
             if [ "$c" != "200" ]; then
               echo "::error::$u gaf $c met de nieuwe .htaccess – oude versie teruggezet"

@@ -32,6 +32,9 @@
   Require all denied
 </FilesMatch>
 
+# Eigen foutpagina
+ErrorDocument 404 /404.html
+
 # De opruim-service-worker altijd vers ophalen
 <Files "sw.js">
   <IfModule mod_headers.c>

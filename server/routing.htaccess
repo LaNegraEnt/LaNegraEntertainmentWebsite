@@ -1,0 +1,22 @@
+# BEGIN La Negra routing – beheerd door de deploy-pipeline (server/routing.htaccess), niet hier wijzigen
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Oude pagina's permanent doorsturen naar de nieuwe (behoudt de positie in Google)
+RewriteRule ^salsa-brassband-huren\.html$ https://lanegra-entertainment.nl/acts/salsa-brassband.html [R=301,L]
+RewriteRule ^samba-danseressen-huren\.html$ https://lanegra-entertainment.nl/acts/samba-danseressen.html [R=301,L]
+RewriteRule ^steelband-huren\.html$ https://lanegra-entertainment.nl/acts/steelband.html [R=301,L]
+RewriteRule ^brassband-huren\.html$ https://lanegra-entertainment.nl/acts/brassband.html [R=301,L]
+RewriteRule ^brassband-met-danseressen\.html$ https://lanegra-entertainment.nl/acts/brassband-met-danseressen.html [R=301,L]
+RewriteRule ^latin-entertainment-band\.html$ https://lanegra-entertainment.nl/acts/latin-entertainment-band.html [R=301,L]
+RewriteRule ^latin-workshops\.html$ https://lanegra-entertainment.nl/acts/workshops.html [R=301,L]
+RewriteRule ^limbo-vuurshow\.html$ https://lanegra-entertainment.nl/acts/limboshow-vuurspuwers.html [R=301,L]
+RewriteRule ^photobooth\.html$ https://lanegra-entertainment.nl/acts/photobooth.html [R=301,L]
+
+# Bestaat het adres niet, dan een echte 404 in plaats van stilletjes de homepage
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ - [R=404,L]
+</IfModule>
+# END La Negra routing

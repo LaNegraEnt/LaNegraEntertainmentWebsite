@@ -54,6 +54,14 @@ if ($o['naam'] === '-' || !filter_var($o['email'], FILTER_VALIDATE_EMAIL) || $o[
 $spam = lnc_spam_reden(['naam' => $o['naam'], 'locatie' => $o['locatie'], 'opmerking' => $o['opmerking']]);
 if ($spam !== '') { lnc_spam_log('offerte', $spam, $o); bk_out(['ok' => true]); }
 
+// Datum moet tussen vandaag en 3 jaar vooruit liggen; een typefout krijgt een melding en verdwijnt niet stil
+$dag = DateTimeImmutable::createFromFormat('!Y-m-d', $o['datum']);
+$vandaag = new DateTimeImmutable('today');
+if (!$dag || $dag < $vandaag || $dag > $vandaag->modify('+3 years')) {
+    lnc_spam_log('offerte', 'datum', $o);
+    bk_out(['ok' => false, 'error' => bk_t($lang, 'Kies een datum tussen vandaag en 3 jaar vooruit.', 'Please choose a date between today and 3 years from now.')], 422);
+}
+
 $link = bk_akkoord_link($o);
 $datum = bk_datum($o['datum']);
 
