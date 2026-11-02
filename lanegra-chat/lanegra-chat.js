@@ -92,13 +92,13 @@
       already: 'Je aanvraag is al verstuurd. We nemen snel contact met je op!',
       fill: 'Wil je dit nog even invullen?',
       check: 'Even checken:', guests: 'gasten', in: 'in',
-      thanks: function (n) { return 'Dank je, ' + n + '! Je aanvraag is binnen. Je krijgt een bevestiging per mail en we sturen je snel een offerte op maat.'; },
+      thanks: function (n) { return 'Dank je, ' + n + '! Je aanvraag is binnen. Je krijgt een bevestiging per mail en we sturen je snel een offerte.'; },
       err: 'Er ging iets mis bij het versturen. Probeer het opnieuw of mail ons via ',
       conn: 'Verbinding mislukt. Mail ons gerust via ',
       unknown: 'Goeie vraag! Die beantwoorden we het liefst persoonlijk. Zal ik direct een vrijblijvende aanvraag voor je klaarzetten?',
       txt: {
         diensten: 'Wij brengen de Caribbean naar jouw feest: samba danseressen, brassband (ook met danseressen), salsa brassband, steelband, Latin Entertainment Band, limboshow en vuurspuwers, salsa- en percussie-workshops en een photobooth. Voor bruiloften, verjaardagen, bedrijfsfeesten, festivals en meer.',
-        prijzen: 'De prijs hangt af van de act, de duur en de locatie. Vertel me kort wat je zoekt, dan krijg je een vrijblijvende offerte op maat.',
+        prijzen: 'De prijs hangt af van de act, de duur en de locatie. Vertel me kort wat je zoekt, dan krijg je een vrijblijvende offerte.',
         datum: 'Populaire data, vooral zaterdagen in het seizoen, gaan snel. Geef je datum door, dan checken we het direct voor je.'
       },
       re: { prijs: /prijs|kost|tarief|budget|€|euro/i, datum: /beschikba|vrij|datum|agenda/i },
@@ -125,13 +125,13 @@
       already: 'Your request has already been sent. We will be in touch soon!',
       fill: 'Could you fill this in?',
       check: 'Let\'s double-check:', guests: 'guests', in: 'in',
-      thanks: function (n) { return 'Thank you, ' + n + '! We\'ve received your request. You\'ll get a confirmation by email and we\'ll send you a tailor-made quote soon.'; },
+      thanks: function (n) { return 'Thank you, ' + n + '! We\'ve received your request. You\'ll get a confirmation by email and we\'ll send you a quote soon.'; },
       err: 'Something went wrong while sending. Please try again or email us at ',
       conn: 'Connection failed. Feel free to email us at ',
       unknown: 'Good question! We\'d love to answer that personally. Shall I set up a free, no-obligation request for you?',
       txt: {
         diensten: 'We bring the Caribbean to your party: samba dancers, brass band (also with dancers), salsa brass band, steel band, Latin Entertainment Band, limbo show and fire breathers, salsa and percussion workshops and a photo booth. For weddings, birthdays, corporate events, festivals and more.',
-        prijzen: 'The price depends on the act, the duration and the location. Tell me briefly what you are looking for and you\'ll get a free, tailor-made quote.',
+        prijzen: 'The price depends on the act, the duration and the location. Tell me briefly what you are looking for and you\'ll get a free quote.',
         datum: 'Popular dates, especially Saturdays in season, go fast. Share your date and we\'ll check it for you right away.'
       },
       re: { prijs: /price|cost|rate|budget|€|euro|fee/i, datum: /availab|free|date|calendar/i },

@@ -106,7 +106,7 @@ tr.tot td:first-child { border-radius: 2mm 0 0 2mm; } tr.tot td:last-child { bor
   var naam = q('naam') || 'Opdrachtgever';
   document.getElementById('klant').innerHTML = '<b>' + esc(naam) + '</b>' + (q('email') ? '<br>' + esc(q('email')) : '') + (q('tel') ? '<br>' + esc(q('tel')) : '');
   document.getElementById('event').innerHTML = '<b>' + esc(q('datum') || 'Datum in overleg') + '</b>' + (q('locatie') ? '<br>' + esc(q('locatie')) : '');
-  document.getElementById('pakket').textContent = [q('pakket'), q('extras') && q('extras') !== q('pakket') ? q('extras') : ''].filter(Boolean).join('\n\n') || 'Entertainment op maat';
+  document.getElementById('pakket').textContent = [q('pakket'), q('extras') && q('extras') !== q('pakket') ? q('extras') : ''].filter(Boolean).join('\n\n') || 'Entertainment';
   var sub = num(q('subtotaal')), reis = num(q('reiskosten')), btw = num(q('btw')), tot = num(q('totaal'));
   var rows = '';
   if (!isNaN(sub)) rows += '<tr><td>Entertainment (excl. btw)</td><td>' + eur(sub) + '</td></tr>';
