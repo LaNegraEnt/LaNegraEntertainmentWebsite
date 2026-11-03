@@ -20,16 +20,17 @@
 
   function calc() {
     var sub = money(v('subtotaal')), reis = money(v('reiskosten')), pct = parseFloat(v('btwPercentage')) || 0, aan = v('aanbetaling') ? money(v('aanbetaling')) : 50;
-    var base = sub + reis, btw = base * pct / 100, tot = base + btw;
+    var toeslag = Math.round(sub * (parseFloat(v('buitenland')) || 0)) / 100;   // 5% toeslag buitenland, niet over de reiskosten
+    var base = sub + toeslag + reis, btw = base * pct / 100, tot = base + btw;
     var half = Math.round(tot * 50) / 100, aanb = Math.min(aan, tot), voor = Math.max(half - aanb, 0);
-    return { sub: sub, reis: reis, pct: pct, base: base, btw: btw, tot: tot, aan: aanb, voor: voor, rest: Math.max(tot - aanb - voor, 0) };
+    return { sub: sub, toeslag: toeslag, reis: reis, pct: pct, base: base, btw: btw, tot: tot, aan: aanb, voor: voor, rest: Math.max(tot - aanb - voor, 0) };
   }
 
   function params(c) {
     var p = new URLSearchParams();
     p.set('naam', v('naam')); p.set('email', v('email')); p.set('tel', v('telefoon')); p.set('datum', datumNL()); p.set('locatie', v('locatie'));
-    p.set('afstandKm', v('afstandKm')); p.set('pakket', v('omschrijving')); p.set('extras', v('extra')); p.set('opmerking', v('extra'));
-    p.set('reiskosten', v('reiskosten') ? eur(c.reis) : ''); p.set('subtotaal', v('subtotaal') ? eur(c.sub) : '');
+    p.set('afstandKm', v('afstandKm')); p.set('pakket', v('omschrijving')); p.set('extras', v('extra')); p.set('opmerking', (c.toeslag ? 'Inclusief 5% toeslag buitenland (' + eur(c.toeslag) + ' excl. btw). ' : '') + v('extra'));
+    p.set('reiskosten', v('reiskosten') ? eur(c.reis) : ''); p.set('subtotaal', v('subtotaal') ? eur(c.sub + c.toeslag) : '');
     p.set('btw', eur(c.btw)); p.set('totaal', eur(c.tot)); p.set('aanbetaling', eur(c.aan)); p.set('voorschot', eur(c.voor)); p.set('restbetaling', eur(c.rest));
     return p;
   }
@@ -56,7 +57,7 @@
       '<h1 style="margin:0 0 16px;font-size:30px;line-height:1.15;color:#1F231E;">Je offerte staat klaar</h1>' +
       '<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#4B4D4B;">Beste ' + esc(v('naam') || 'relatie') + ',<br>Hierbij ontvang je je offerte van La Negra Entertainment.</p>' +
       box('Samenvatting', '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">' + row('Datum', esc(datumNL() || '-')) + row('Locatie', esc(v('locatie') || '-')) +
-        row('Entertainment', esc(v('omschrijving') || '-').replace(/\n/g, '<br>')) + row('Reiskosten', v('reiskosten') ? eur(c.reis) : '-') + row('Subtotaal excl. btw', eur(c.base)) +
+        row('Entertainment', esc(v('omschrijving') || '-').replace(/\n/g, '<br>')) + (c.toeslag ? row('Toeslag buitenland (5%)', eur(c.toeslag)) : '') + row('Reiskosten', v('reiskosten') ? eur(c.reis) : '-') + row('Subtotaal excl. btw', eur(c.base)) +
         row('Btw (' + c.pct + '%)', eur(c.btw)) + row('Totaal incl. btw', eur(c.tot), true) + row('Reserveringsaanbetaling (direct)', eur(c.aan)) + row('Voorschot tot 50% (binnen 14 dagen)', eur(c.voor)) + row('Restbetaling (uiterlijk 7 dagen na het optreden)', eur(c.rest)) + '</table>', '#FFFBEA') +
       (v('extra') ? box('Toelichting', '<p style="margin:0;font-size:14px;line-height:1.7;color:#4B4D4B;">' + esc(v('extra')).replace(/\n/g, '<br>') + '</p>') : '') +
       '<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#4B4D4B;">Via de knop bekijk je je offerte, geef je akkoord en ga je door naar de aanbetaling.</p>' +
@@ -134,7 +135,7 @@
     if (!v('email')) { notice('Vul eerst het e-mailadres van de klant in.'); $('email').focus(); return; }
     var c = calc();
     var body = 'Beste ' + (v('naam') || 'relatie') + ',\n\nHierbij ontvang je je offerte van La Negra Entertainment.\n\nDatum: ' + (datumNL() || '-') + '\nLocatie: ' + (v('locatie') || '-') +
-      '\nEntertainment: ' + (v('omschrijving') || '-') + '\nReiskosten: ' + (v('reiskosten') ? eur(c.reis) : '-') + '\nSubtotaal excl. btw: ' + eur(c.base) + '\nBtw: ' + eur(c.btw) +
+      '\nEntertainment: ' + (v('omschrijving') || '-') + (c.toeslag ? '\nToeslag buitenland (5%): ' + eur(c.toeslag) : '') + '\nReiskosten: ' + (v('reiskosten') ? eur(c.reis) : '-') + '\nSubtotaal excl. btw: ' + eur(c.base) + '\nBtw: ' + eur(c.btw) +
       '\nTotaal incl. btw: ' + eur(c.tot) + '\nReserveringsaanbetaling (direct): ' + eur(c.aan) + '\nVoorschot tot 50% (binnen 14 dagen): ' + eur(c.voor) + '\nRestbetaling (uiterlijk 7 dagen na het optreden): ' + eur(c.rest) + '\n\nToelichting:\n' + (v('extra') || '-') +
       '\n\nVia deze link bekijk je je offerte, geef je akkoord en ga je door naar de aanbetaling:\n' + link(c) + '\n\nMet vriendelijke groet,\n\nLa Negra Entertainment\ninfo@lanegra-entertainment.nl\n+31 6 25 17 80 50';
     window.location.href = 'mailto:' + encodeURIComponent(v('email')) + '?subject=' + encodeURIComponent('Je offerte van La Negra Entertainment') + '&body=' + encodeURIComponent(body);

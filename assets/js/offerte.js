@@ -9,13 +9,17 @@
     notFilled: 'Not filled in yet', yes: 'Yes', no: 'No', djNote: 'DJ chosen (2.5 hours, +€400). ', name: 'Please enter your first name.',
     mail: 'Please enter a valid email address.', date: 'Please enter the date of your event.', range: 'Please choose a date between today and 3 years from now.', busy: 'Sending…', btn: 'Send my choice',
     fail: 'Sending failed. Please try again or email us at info@lanegra-entertainment.nl.', post: '../stuur-offerte.php',
-    extras: ['Fire breather / Limbo show', 'Steel band 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2.5 hours']
+    extras: ['Fire breather / Limbo show', 'Steel band 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2.5 hours'],
+    landen: { BE: 'Belgium', DE: 'Germany', LU: 'Luxembourg', FR: 'France', XX: 'abroad' },
+    toeslag: function (land, b) { return 'Event in ' + land + ': 5% surcharge for performances abroad (' + b + ' excl. VAT) is included in the subtotal. '; }
   } : {
     none: 'Geen', notChosen: 'Niet gekozen', dancer: ' danseres', dancers: ' danseressen', onRequest: '5+ (op aanvraag)', hours: ' uur', ws: ' — 1,5 uur',
     notFilled: 'Nog niet ingevuld', yes: 'Ja', no: 'Nee', djNote: 'DJ gekozen (2,5 uur, +€400,-). ', name: 'Vul je voornaam in.',
     mail: 'Vul een geldig e-mailadres in.', date: 'Vul de datum van je evenement in.', range: 'Kies een datum tussen vandaag en 3 jaar vooruit.', busy: 'Bezig met versturen…', btn: 'Keuze doorgeven',
     fail: 'Versturen lukte niet. Probeer het opnieuw of mail ons via info@lanegra-entertainment.nl.', post: 'stuur-offerte.php',
-    extras: ['Vuurspuwer / Limboshow', 'Steelband 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2,5 uur']
+    extras: ['Vuurspuwer / Limboshow', 'Steelband 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2,5 uur'],
+    landen: { BE: 'België', DE: 'Duitsland', LU: 'Luxemburg', FR: 'Frankrijk', XX: 'buitenland' },
+    toeslag: function (land, b) { return 'Optreden in ' + land + ': 5% toeslag buitenland (' + b + ' excl. btw) zit in het subtotaal. '; }
   };
   var PB = { 'Basic 2 uur': 195, 'Basic 4 uur': 250, 'Silver 2 uur': 250, 'Silver 4 uur': 300, 'Exclusive 2 uur': 550, 'Exclusive 4 uur': 750 };
   var EXTRAS = [
@@ -34,6 +38,40 @@
   function val(id) { return ($(id).value || '').trim(); }
 
   var KM_TARIEF = 0.23;   // € per km
+  var TOESLAG_BUITENLAND = 0.05;   // 5% op de acts bij een optreden buiten Nederland (reiskosten tellen niet mee)
+
+  // Plaatsen en landen die we in "Locatie of stad" herkennen; plaatsnamen die ook in Nederland bestaan staan er bewust niet in
+  var HERKEN = [
+    ['BE', /belgi|belgique|antwerpen|antwerp|anvers|\bgent\b|ghent|brussel|bruxelles|brussels|\bbrugge\b|bruges|leuven|kortrijk|oostende|ostend|knokke|luik|li[eè]ge|namur|charleroi|turnhout|sint-niklaas|lommel|\bgenk\b/i],
+    ['DE', /duitsland|germany|deutschland|d[uü]sseldorf|k[oö]ln|keulen|cologne|aachen|\baken\b|duisburg|dortmund|kleve|emmerich|bocholt|m[uü]nster|oberhausen|krefeld|m[oö]nchengladbach|berlijn|berlin|hamburg|frankfurt|m[uü]nchen|munich|\bbonn\b|nordhorn|gronau|bremen|hannover/i],
+    ['LU', /luxemburg|luxembourg/i],
+    ['FR', /frankrijk|france|parijs|paris|\blille\b|rijsel/i]
+  ];
+  var landSel = $('f-land'), landHand = false;
+  if (landSel) {
+    var uitUrl = (new URLSearchParams(location.search).get('land') || '').toUpperCase();
+    if (L.landen[uitUrl]) landSel.value = uitUrl;   // bijv. offerte-rider.html?land=BE vanaf de Belgische regiopagina's
+    landSel.addEventListener('change', function () { landHand = true; });
+    var loc = $('f-locatie');
+    var landAuto = false;   // true als het land door de herkenning is gekozen; dan mag een Nederlandse plaats het weer terugzetten
+    if (loc) loc.addEventListener('input', function () {
+      if (landHand) return;
+      for (var i = 0; i < HERKEN.length; i++) if (HERKEN[i][1].test(loc.value)) { landSel.value = HERKEN[i][0]; landAuto = true; return; }
+      if (landAuto) { landSel.value = 'NL'; landAuto = false; }
+    });
+  }
+
+  // Prijzen op de pagina tonen inclusief de toeslag zodra het optreden buiten Nederland is
+  var prijsEls = form.querySelectorAll('.opt-price, .opt-sub, .chk-price, .pb-table td, .q-lead');
+  function toonPrijzen(factor) {
+    Array.prototype.forEach.call(prijsEls, function (el) {
+      if (el.dataset.orig === undefined) el.dataset.orig = el.innerHTML;
+      el.innerHTML = factor === 1 ? el.dataset.orig : el.dataset.orig.replace(/€ ?(\d{1,3}(?:\.\d{3})*)(,-|,\d\d)?/g, function (m, a, b) {
+        var n = parseInt(a.replace(/\./g, ''), 10) + (b && b !== ',-' ? parseInt(b.slice(1), 10) / 100 : 0);
+        return euro(Math.round(n * factor * 100) / 100);
+      });
+    });
+  }
 
   function calc() {
     var pk = checked('pakket'), d = checked('danseressen'), pb = checked('photobooth'), huur = checked('pb-huur');
@@ -53,7 +91,10 @@
     });
     c.pbPrijs = c.pb === 'Geen' ? 0 : (PB[c.pb + ' ' + c.huur] || 0);
     c.wsPrijs = c.ws.length ? 200 : 0;
-    c.sub = c.pakketPrijs + c.extrasPrijs + c.dansPrijs + c.pbPrijs + c.wsPrijs + c.reis;
+    c.land = landSel ? landSel.value : 'NL';
+    c.acts = c.pakketPrijs + c.extrasPrijs + c.dansPrijs + c.pbPrijs + c.wsPrijs;
+    c.toeslag = c.land !== 'NL' ? Math.round(c.acts * TOESLAG_BUITENLAND * 100) / 100 : 0;
+    c.sub = c.acts + c.toeslag + c.reis;
     c.btw = Math.round(c.sub * 9) / 100;                 // 9% btw, op de cent
     c.totaal = Math.round((c.sub + c.btw) * 100) / 100;
     return c;
@@ -73,6 +114,8 @@
     set('sum-km', c.km ? c.kmEnkel + ' km × 2 = ' + c.km + ' km × € 0,23' : L.notFilled);
     set('sum-reis', euro(c.reis));
     var rk = $('f-reiskosten'); if (rk) rk.value = c.km ? euro(c.reis) : '';
+    var rt = $('row-toeslag'); if (rt) { rt.style.display = c.land !== 'NL' ? '' : 'none'; set('sum-toeslag', euro(c.toeslag)); }
+    toonPrijzen(c.land !== 'NL' ? 1 + TOESLAG_BUITENLAND : 1);
     set('sum-sub', euro(c.sub));
     set('sum-btw', euro(c.btw));
     set('sum-total', euro(c.totaal));
@@ -105,7 +148,11 @@
     d.append('email', email);
     d.append('telefoon', val('f-tel') || '-');
     d.append('datum_evenement', datum);
-    d.append('locatie', val('f-locatie') || '-');
+    var plaats = val('f-locatie'), landNaam = c.land !== 'NL' ? L.landen[c.land] : '';
+    if (landNaam && c.land !== 'XX' && plaats.toLowerCase().indexOf(landNaam.toLowerCase()) < 0) plaats = plaats ? plaats + ', ' + landNaam : landNaam;
+    if (landNaam && c.land === 'XX') plaats = plaats ? plaats + ' (' + landNaam + ')' : landNaam;
+    d.append('locatie', plaats || '-');
+    d.append('land', c.land);
     d.append('kilometers', c.km ? c.km + (EN ? ' km return (2 × ' : ' km heen en terug (2 × ') + c.kmEnkel + ' km)' : '-');
     d.append('reiskosten', euro(c.reis));
     d.append('pakket', c.pakket);
@@ -119,6 +166,7 @@
     d.append('lang', EN ? 'en' : 'nl');
     var opm = val('f-opmerking') || '-';
     if (c.flags['extra-dj']) opm = L.djNote + (opm === '-' ? '' : opm);
+    if (c.toeslag) opm = L.toeslag(landNaam, euro(c.toeslag)) + (opm === '-' ? '' : opm);
     d.append('opmerkingen', opm.trim() || '-');
     d.append('subtotaal_excl_btw', euro(c.sub));
     d.append('btw_9pct', euro(c.btw));
