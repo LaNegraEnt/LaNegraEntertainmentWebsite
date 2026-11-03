@@ -17,6 +17,16 @@ RewriteRule ^latin-workshops\.html$ https://lanegra-entertainment.nl/acts/worksh
 RewriteRule ^limbo-vuurshow\.html$ https://lanegra-entertainment.nl/acts/limboshow-vuurspuwers.html [R=301,L]
 RewriteRule ^photobooth\.html$ https://lanegra-entertainment.nl/acts/photobooth.html [R=301,L]
 
+# Seizoenspagina's: varianten van het adres (zonder jaartal, zonder .html, met hoofdletters) naar de echte pagina
+RewriteCond %{REQUEST_URI} !^/carnaval-2027\.html$
+RewriteRule ^(gelegenheden/)?carnaval(-?20\d\d)?(\.html?|/)?$ https://lanegra-entertainment.nl/carnaval-2027.html [NC,R=301,L]
+RewriteCond %{REQUEST_URI} !^/kerst-nieuwjaarsborrel\.html$
+RewriteRule ^(gelegenheden/)?(kerst|kerstborrel|kerstfeest|nieuwjaarsborrel|kerst-nieuwjaarsborrel)(\.html?|/)?$ https://lanegra-entertainment.nl/kerst-nieuwjaarsborrel.html [NC,R=301,L]
+RewriteCond %{REQUEST_URI} !^/oud-en-nieuw\.html$
+RewriteRule ^(gelegenheden/)?(oud-en-nieuw|oudennieuw|oud-nieuw|oudjaar)(\.html?|/)?$ https://lanegra-entertainment.nl/oud-en-nieuw.html [NC,R=301,L]
+RewriteCond %{REQUEST_URI} !^/verjaardag-samba-surprise\.html$
+RewriteRule ^(verjaardag|samba-surprise|verjaardag-samba-surprise)(\.html?|/)?$ https://lanegra-entertainment.nl/verjaardag-samba-surprise.html [NC,R=301,L]
+
 # Bestaat het adres niet, dan een echte 404 in plaats van stilletjes de homepage
 RewriteCond %{REQUEST_URI} !^/\.well-known/
 RewriteCond %{REQUEST_FILENAME} !-f
