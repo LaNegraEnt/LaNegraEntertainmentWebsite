@@ -15,6 +15,26 @@
     });
   }
 
+  // Datumvelden: alleen vandaag tot 3 jaar vooruit; telefoon alleen cijfers (de server controleert hetzelfde)
+  var MELD = {
+    nl: ['Kies een datum tussen vandaag en 3 jaar vooruit.', 'Vul een geldig telefoonnummer in (alleen cijfers), of laat het veld leeg.'],
+    en: ['Please choose a date between today and 3 years from now.', 'Please enter a valid phone number (digits only), or leave it empty.'],
+    es: ['Elige una fecha entre hoy y dentro de 3 años.', 'Introduce un número de teléfono válido (solo cifras) o deja el campo vacío.'],
+    de: ['Bitte wählen Sie ein Datum zwischen heute und in 3 Jahren.', 'Bitte geben Sie eine gültige Telefonnummer ein (nur Ziffern) oder lassen Sie das Feld leer.']
+  };
+  var TT = MELD[(document.documentElement.lang || 'nl').slice(0, 2)] || MELD.nl;
+  function iso(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function telOk(v) { v = v.trim(); if (!v) return true; if (!/^[0-9+()\s.\/-]{8,25}$/.test(v)) return false; var n = v.replace(/\D/g, '').length; return n >= 8 && n <= 15; }
+  var vandaag = new Date(), tot = new Date(); tot.setFullYear(tot.getFullYear() + 3);
+  document.querySelectorAll('input[type=date]').forEach(function (el) {
+    if (!el.min) el.min = iso(vandaag);
+    if (!el.max) el.max = iso(tot);
+    el.addEventListener('input', function () { el.setCustomValidity(''); });
+  });
+  document.querySelectorAll('input[type=tel]').forEach(function (el) {
+    el.addEventListener('input', function () { el.setCustomValidity(''); });
+  });
+
   // Aanvraagformulier → zelfde verwerking als de chat (lanegra-chat/chat-lead.php)
   var started = Date.now();
   function src() {
@@ -28,6 +48,9 @@
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var msg = f.querySelector('.form-msg'), btn = f.querySelector('button[type=submit]');
+      var dEl = f.elements.datum, tEl = f.elements.telefoon;
+      if (dEl && dEl.value) dEl.setCustomValidity(dEl.value < dEl.min || dEl.value > dEl.max ? TT[0] : '');
+      if (tEl) tEl.setCustomValidity(telOk(tEl.value) ? '' : TT[1]);
       if (!f.checkValidity()) { f.reportValidity(); return; }
       var v = function (k) { var el = f.elements[k]; return el ? el.value.trim() : ''; };
       var payload = {
@@ -45,7 +68,7 @@
             f.reset(); msg.className = 'form-msg ok'; msg.textContent = f.dataset.ok;
             if (window.gtag) try { window.gtag('event', 'generate_lead', { method: 'form' }); } catch (x) {}
             if (window.fbq) try { window.fbq('track', 'Lead'); } catch (x) {}
-          } else { msg.className = 'form-msg err'; msg.textContent = f.dataset.err; }
+          } else { msg.className = 'form-msg err'; msg.textContent = (d && d.error) || f.dataset.err; }
         })
         .catch(function () { msg.className = 'form-msg err'; msg.textContent = f.dataset.err; })
         .then(function () { btn.disabled = false; });

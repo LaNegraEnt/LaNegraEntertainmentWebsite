@@ -61,6 +61,10 @@ if (!$dag || $dag < $vandaag || $dag > $vandaag->modify('+3 years')) {
     lnc_spam_log('offerte', 'datum', $o);
     bk_out(['ok' => false, 'error' => bk_t($lang, 'Kies een datum tussen vandaag en 3 jaar vooruit.', 'Please choose a date between today and 3 years from now.')], 422);
 }
+if (!lnc_tel_ok($o['tel'])) {
+    lnc_spam_log('offerte', 'telefoon', $o);
+    bk_out(['ok' => false, 'error' => lnc_melding('tel', $lang)], 422);
+}
 
 $link = bk_akkoord_link($o);
 $datum = bk_datum($o['datum']);

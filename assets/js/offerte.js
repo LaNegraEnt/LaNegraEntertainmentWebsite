@@ -7,7 +7,7 @@
   var L = EN ? {
     none: 'None', notChosen: 'Not chosen', dancer: ' dancer', dancers: ' dancers', onRequest: '5+ (on request)', hours: ' hours', ws: ' — 1.5 hours',
     notFilled: 'Not filled in yet', yes: 'Yes', no: 'No', djNote: 'DJ chosen (2.5 hours, +€400). ', name: 'Please enter your first name.',
-    mail: 'Please enter a valid email address.', date: 'Please enter the date of your event.', range: 'Please choose a date between today and 3 years from now.', busy: 'Sending…', btn: 'Send my choice',
+    mail: 'Please enter a valid email address.', tel: 'Please enter a valid phone number (digits only), or leave it empty.', date: 'Please enter the date of your event.', range: 'Please choose a date between today and 3 years from now.', busy: 'Sending…', btn: 'Send my choice',
     fail: 'Sending failed. Please try again or email us at info@lanegra-entertainment.nl.', post: '../stuur-offerte.php',
     extras: ['Fire breather / Limbo show', 'Steel band 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2.5 hours'],
     btwLbl: '9% VAT', verlegdLbl: 'VAT reverse-charged (0%)', totLbl: 'Total incl. VAT', totVerlegd: 'Total (VAT reverse-charged)', verlegdVal: '€ 0 (VAT reverse-charged)',
@@ -17,7 +17,7 @@
   } : {
     none: 'Geen', notChosen: 'Niet gekozen', dancer: ' danseres', dancers: ' danseressen', onRequest: '5+ (op aanvraag)', hours: ' uur', ws: ' — 1,5 uur',
     notFilled: 'Nog niet ingevuld', yes: 'Ja', no: 'Nee', djNote: 'DJ gekozen (2,5 uur, +€400,-). ', name: 'Vul je voornaam in.',
-    mail: 'Vul een geldig e-mailadres in.', date: 'Vul de datum van je evenement in.', range: 'Kies een datum tussen vandaag en 3 jaar vooruit.', busy: 'Bezig met versturen…', btn: 'Keuze doorgeven',
+    mail: 'Vul een geldig e-mailadres in.', tel: 'Vul een geldig telefoonnummer in (alleen cijfers), of laat het veld leeg.', date: 'Vul de datum van je evenement in.', range: 'Kies een datum tussen vandaag en 3 jaar vooruit.', busy: 'Bezig met versturen…', btn: 'Keuze doorgeven',
     fail: 'Versturen lukte niet. Probeer het opnieuw of mail ons via info@lanegra-entertainment.nl.', post: 'stuur-offerte.php',
     extras: ['Vuurspuwer / Limboshow', 'Steelband 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2,5 uur'],
     btwLbl: '9% btw', verlegdLbl: 'Btw verlegd (0%)', totLbl: 'Totaal incl. btw', totVerlegd: 'Totaal (btw verlegd)', verlegdVal: '€ 0,- (btw verlegd)',
@@ -149,6 +149,8 @@
     var dag = new Date(datum + 'T12:00:00'), nu = new Date(), max = new Date();
     nu.setHours(0, 0, 0, 0); max.setFullYear(max.getFullYear() + 3);
     if (isNaN(dag) || dag < nu || dag > max) return fail(L.range, $('f-datum'));
+    var tel = val('f-tel'), telN = tel.replace(/\D/g, '').length;
+    if (tel && (!/^[0-9+()\s.\/-]{8,25}$/.test(tel) || telN < 8 || telN > 15)) return fail(L.tel, $('f-tel'));
 
     var c = calc();
     var d = new FormData();

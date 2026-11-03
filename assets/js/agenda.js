@@ -122,6 +122,8 @@
     if (!$('cStart').value || !$('cEind').value) return fail('Kies een begin- en eindtijd.', $('cStart'));
     if (!n) return fail('Vul je naam in.', $('cNaam'));
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)) return fail('Vul een geldig e-mailadres in.', $('cMail'));
+    var tel = $('cTel').value.trim(), telN = tel.replace(/\D/g, '').length;
+    if (tel && (!/^[0-9+()\s.\/-]{8,25}$/.test(tel) || telN < 8 || telN > 15)) return fail('Vul een geldig telefoonnummer in (alleen cijfers), of laat het veld leeg.', $('cTel'));
     var keuze = document.querySelector('input[name=keuze]:checked').value;
     var data = { datum: key(sel), start: $('cStart').value, eind: $('cEind').value, act: $('cAct').value, naam: n, email: m,
       telefoon: $('cTel').value.trim(), plaats: $('cPlaats').value.trim(), opmerking: $('cOpm').value.trim(), keuze: keuze,

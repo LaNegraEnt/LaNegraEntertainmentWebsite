@@ -29,7 +29,7 @@ try {
 
     // ── Maandoverzicht: per dag 'deels' of 'vol' ──
     if ($action === 'month' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (!preg_match('/^\d{4}-\d{2}$/', $_GET['ym'] ?? '')) out(['ok' => false, 'error' => 'Ongeldige maand'], 400);
+        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $_GET['ym'] ?? '')) out(['ok' => false, 'error' => 'Ongeldige maand'], 400);
         $from = new DateTimeImmutable($_GET['ym'] . '-01 00:00', $tz); $to = $from->modify('+1 month');
         $days = [];
         foreach (lna_events($from, $to) as $e) {
@@ -46,7 +46,7 @@ try {
 
     // ── Eén dag: welke tijden zijn bezet ──
     if ($action === 'day' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date'] ?? '')) out(['ok' => false, 'error' => 'Ongeldige datum'], 400);
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $_GET['date'] ?? '', $gm) || !checkdate((int)$gm[2], (int)$gm[3], (int)$gm[1])) out(['ok' => false, 'error' => 'Ongeldige datum'], 400);
         $from = new DateTimeImmutable($_GET['date'] . ' 00:00', $tz);
         $busy = []; $vol = false;
         foreach (lna_events($from, $from->modify('+1 day +6 hours')) as $e) {
@@ -77,8 +77,13 @@ try {
         if ($f['naam'] === '' || !filter_var($f['email'], FILTER_VALIDATE_EMAIL)) out(['ok' => false, 'error' => 'Vul je naam en een geldig e-mailadres in.'], 422);
         $spam = lnc_spam_reden(['naam' => $f['naam'], 'plaats' => $f['plaats'], 'opmerking' => $f['opmerking']]);
         if ($spam !== '') { lnc_spam_log('agenda', $spam, $f); out(['ok' => true, 'mode' => 'optie']); }
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $f['datum']) || !preg_match('/^\d{2}:\d{2}$/', $f['start']) || !preg_match('/^\d{2}:\d{2}$/', $f['eind']))
-            out(['ok' => false, 'error' => 'Kies een datum en tijden.'], 422);
+        // Datum moet echt bestaan (geen 31-02) en tijden tussen 00:00 en 23:59
+        $tijd = '/^([01]\d|2[0-3]):[0-5]\d$/';
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $f['datum'], $dm) || !checkdate((int)$dm[2], (int)$dm[3], (int)$dm[1]) || !preg_match($tijd, $f['start']) || !preg_match($tijd, $f['eind'])) {
+            lnc_spam_log('agenda', 'datum/tijd', $f);
+            out(['ok' => false, 'error' => 'Kies een geldige datum en tijden.'], 422);
+        }
+        if (!lnc_tel_ok($f['telefoon'])) out(['ok' => false, 'error' => lnc_melding('tel', 'nl')], 422);
         $s = new DateTimeImmutable($f['datum'] . ' ' . $f['start'], $tz); $e = new DateTimeImmutable($f['datum'] . ' ' . $f['eind'], $tz);
         if ($e <= $s) $e = $e->modify('+1 day');                         // eindtijd na middernacht
         if ($s < (new DateTimeImmutable('today', $tz))->modify('+' . LNA_MIN_DAYS_AHEAD . ' days')) out(['ok' => false, 'error' => 'Deze datum is te kort dag om online te reserveren. Bel of app ons even.'], 422);

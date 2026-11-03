@@ -105,6 +105,44 @@ function lnc_spam_reden(array $velden): string {
     return '';
 }
 
+/** Leest een datum als 2027-06-14, 14-06-2027, 14/06/2027 of 14.06.2027; null als hij niet bestaat (bijv. 31-02). */
+function lnc_datum_lees(string $v): ?DateTimeImmutable {
+    $v = trim($v);
+    if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $v, $m)) [$j, $mnd, $d] = [(int)$m[1], (int)$m[2], (int)$m[3]];
+    elseif (preg_match('#^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$#', $v, $m)) [$d, $mnd, $j] = [(int)$m[1], (int)$m[2], (int)$m[3]];
+    else return null;
+    if (!checkdate($mnd, $d, $j)) return null;
+    return new DateTimeImmutable(sprintf('%04d-%02d-%02d', $j, $mnd, $d));
+}
+
+/** Datum moet bestaan en tussen vandaag en 3 jaar vooruit liggen. */
+function lnc_datum_ok(string $v): bool {
+    $d = lnc_datum_lees($v);
+    $vandaag = new DateTimeImmutable('today');
+    return $d !== null && $d >= $vandaag && $d <= $vandaag->modify('+3 years');
+}
+
+/** Telefoonnummer: alleen cijfers, spaties, + ( ) - . / en 8 tot 15 cijfers. Leeg mag (veld is niet verplicht). */
+function lnc_tel_ok(string $v): bool {
+    $v = trim($v);
+    if ($v === '' || $v === '-') return true;
+    if (!preg_match('#^[0-9+()\s./-]{8,25}$#', $v)) return false;
+    $n = strlen(preg_replace('/\D/', '', $v));
+    return $n >= 8 && $n <= 15;
+}
+
+/** Foutmeldingen voor datum en telefoon in de taal van de bezoeker. */
+function lnc_melding(string $soort, string $lang): string {
+    $t = [
+        'datum' => ['nl' => 'Kies een datum tussen vandaag en 3 jaar vooruit, bijvoorbeeld 14-06-2027.', 'en' => 'Please choose a date between today and 3 years from now, e.g. 14-06-2027.',
+                    'es' => 'Elige una fecha entre hoy y dentro de 3 años, p. ej. 14-06-2027.', 'de' => 'Bitte wählen Sie ein Datum zwischen heute und in 3 Jahren, z. B. 14-06-2027.'],
+        'tel'   => ['nl' => 'Vul een geldig telefoonnummer in (alleen cijfers), of laat het veld leeg.', 'en' => 'Please enter a valid phone number (digits only), or leave it empty.',
+                    'es' => 'Introduce un número de teléfono válido (solo cifras) o deja el campo vacío.', 'de' => 'Bitte geben Sie eine gültige Telefonnummer ein (nur Ziffern) oder lassen Sie das Feld leer.'],
+    ];
+    $lang = strtolower(substr($lang, 0, 2));
+    return $t[$soort][$lang] ?? $t[$soort]['nl'];
+}
+
 /** Bewaart afgewezen spam in een afgeschermd logbestand, zodat een echte klant nooit stilletjes verdwijnt. */
 function lnc_spam_log(string $bron, string $reden, array $velden): void {
     $dir = defined('LNC_DATA_DIR') ? LNC_DATA_DIR : __DIR__ . '/data';

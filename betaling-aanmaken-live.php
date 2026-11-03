@@ -20,6 +20,18 @@ if ($o['naam'] === '-' || !filter_var($o['email'], FILTER_VALIDATE_EMAIL) || $o[
 $sig = (string)($_POST['sig'] ?? '');
 $verified = $sig !== '' && $sig !== '-' && hash_equals(bk_sign($o), $sig);
 
+// Datum moet bestaan en mag niet in het verleden liggen (leeg mag: offerte zonder vaste datum)
+$dag = lnc_datum_lees($o['datum']);
+if (($o['datum'] !== '-' && !$dag) || ($dag && $dag < new DateTimeImmutable('today'))) {
+    lnc_spam_log('akkoord', 'datum', $o);
+    bk_out(['ok' => false, 'message' => bk_t($lang, 'De datum van deze boeking klopt niet of ligt in het verleden. Mail ons via ', 'The date of this booking is invalid or in the past. Please email us at ') . LNC_MAIL_TO . '.'], 422);
+}
+// Spamfilter op de vrije tekstvelden, vooral voor links die niet van de website komen
+if (lnc_spam_reden(['naam' => $o['naam'], 'locatie' => $o['locatie'], 'opmerking' => $o['opmerking']]) !== '') {
+    lnc_spam_log('akkoord', 'spam', $o);
+    bk_out(['ok' => false, 'message' => bk_t($lang, 'Deze aanvraag kon niet worden verwerkt. Mail ons via ', 'This request could not be processed. Please email us at ') . LNC_MAIL_TO . '.'], 422);
+}
+
 // Zelfde offerte opnieuw (betaling afgebroken)? Dan dezelfde order gebruiken en geen nieuwe akkoordmails sturen.
 $herhaling = false;
 try {

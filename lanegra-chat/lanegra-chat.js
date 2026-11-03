@@ -214,11 +214,30 @@
       ]
     }
   };
+  // Datum (bijv. 14-06-2027) moet bestaan en tussen vandaag en 3 jaar vooruit liggen; telefoon alleen cijfers
+  var BAD = {
+    nl: ['Dat lijkt geen geldige datum. Typ hem als dag-maand-jaar, bijvoorbeeld 14-06-2027, tussen vandaag en 3 jaar vooruit.', 'Dat lijkt geen geldig telefoonnummer. Typ alleen cijfers, bijvoorbeeld 06 12345678.'],
+    en: ['That doesn\'t look like a valid date. Type it as day-month-year, e.g. 14-06-2027, between today and 3 years from now.', 'That doesn\'t look like a valid phone number. Please use digits only, e.g. +31 6 12345678.'],
+    es: ['Esa fecha no parece válida. Escríbela como día-mes-año, p. ej. 14-06-2027, entre hoy y dentro de 3 años.', 'Ese número no parece válido. Usa solo cifras, p. ej. +31 6 12345678.'],
+    de: ['Das scheint kein gültiges Datum zu sein. Bitte als Tag-Monat-Jahr eingeben, z. B. 14-06-2027, zwischen heute und in 3 Jahren.', 'Das scheint keine gültige Telefonnummer zu sein. Bitte nur Ziffern eingeben, z. B. +49 170 1234567.']
+  };
+  function datumOk(v) {
+    var m = String(v).trim().match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/) || String(v).trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (!m) return false;
+    var j, mnd, d; if (m[1].length === 4) { j = +m[1]; mnd = +m[2]; d = +m[3]; } else { d = +m[1]; mnd = +m[2]; j = +m[3]; }
+    var dt = new Date(j, mnd - 1, d), nu = new Date(), max = new Date();
+    if (dt.getFullYear() !== j || dt.getMonth() !== mnd - 1 || dt.getDate() !== d) return false;   // bestaat niet, bijv. 31-02
+    nu.setHours(0, 0, 0, 0); max.setFullYear(max.getFullYear() + 3);
+    return dt >= nu && dt <= max;
+  }
+  function telOk(v) { v = String(v).trim(); if (!/^[0-9+()\s.\/-]{8,25}$/.test(v)) return false; var n = v.replace(/\D/g, '').length; return n >= 8 && n <= 15; }
   var LANG = (ds.lang || document.documentElement.lang || 'nl').slice(0, 2).toLowerCase();
   if (!LANGS[LANG]) LANG = 'nl';
   var T = LANGS[LANG];
   var FLOW = T.flow.map(function (f) {
     if (f.input === 'email') f.validate = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? '' : f.bad; };
+    if (f.key === 'datum') f.validate = function (v) { return datumOk(v) ? '' : BAD[LANG][0]; };
+    if (f.input === 'tel') f.validate = function (v) { return telOk(v) ? '' : BAD[LANG][1]; };
     return f;
   });
   var TXT = T.txt;

@@ -37,8 +37,12 @@ require_once __DIR__ . '/_mail.php';
 $spam = lnc_spam_reden(['naam' => $f['Naam'], 'plaats' => $f['Plaats'], 'opmerking' => $f['Opmerking']]);
 if ($spam !== '') { lnc_spam_log('chat/formulier', $spam, $f); lnc_out(['ok' => true]); }   // stil negeren
 
+// Datum (niet verplicht) moet bestaan en tussen vandaag en 3 jaar vooruit liggen; telefoon alleen cijfers
+if ($f['Datum'] !== '' && !lnc_datum_ok($f['Datum'])) { lnc_spam_log('chat/formulier', 'datum', $f); lnc_out(['ok' => false, 'error' => lnc_melding('datum', $f['Taal'])], 422); }
+if (!lnc_tel_ok($f['Telefoon'])) { lnc_spam_log('chat/formulier', 'telefoon', $f); lnc_out(['ok' => false, 'error' => lnc_melding('tel', $f['Taal'])], 422); }
+
 // Datum uit het formulier (2027-06-14) leesbaar maken (14-06-2027)
-if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $f['Datum'], $d)) $f['Datum'] = $d[3] . '-' . $d[2] . '-' . $d[1];
+if ($f['Datum'] !== '') $f['Datum'] = lnc_datum_lees($f['Datum'])->format('d-m-Y');
 
 $src = is_array($in['source'] ?? null) ? $in['source'] : [];
 $srcTxt = [];
