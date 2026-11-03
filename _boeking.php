@@ -274,11 +274,12 @@ function bk_boeking_card(array $o, string $titel, string $lang = 'nl'): string {
 
 function bk_bedragen_card(array $o, bool $metBetaling, string $lang = 'nl'): string {
     $en = $lang === 'en';
+    $verlegd = (bool)preg_match('/verlegd|reverse/i', (string)($o['btw'] ?? ''));   // België: btw verlegd
     $rows = [
         $en ? 'Travel costs' : 'Reiskosten'                  => lnc_e($o['reiskosten']),
         $en ? 'Subtotal excl. VAT' : 'Subtotaal excl. btw'   => lnc_e($o['subtotaal']),
-        $en ? 'VAT (9%)' : 'Btw (9%)'                        => lnc_e($o['btw']),
-        $en ? 'Total incl. VAT' : 'Totaal incl. btw'         => '<span style="color:#D74B27">' . lnc_e($o['totaal']) . '</span>',
+        ($verlegd ? ($en ? 'VAT' : 'Btw') : ($en ? 'VAT (9%)' : 'Btw (9%)')) => lnc_e($o['btw']),
+        ($verlegd ? ($en ? 'Total (VAT reverse-charged)' : 'Totaal (btw verlegd)') : ($en ? 'Total incl. VAT' : 'Totaal incl. btw')) => '<span style="color:#D74B27">' . lnc_e($o['totaal']) . '</span>',
     ];
     if ($metBetaling) {
         $rows[$en ? 'Reservation deposit' : 'Reserveringsaanbetaling'] = lnc_e($o['aanbetaling']);
@@ -330,7 +331,7 @@ function bk_mail_bevestiging(array $o): void {
 
     $html = bk_template(bk_t($lang, 'definitieve-opdrachtbevestiging-mail.html', 'definitieve-opdrachtbevestiging-mail-en.html'), [
         'AANHEF' => bk_t($lang, 'Hoi ', 'Hi ') . bk_voornaam($o['naam']) . ',', 'NAAM' => $o['naam'], 'DATUM' => $datum, 'LOCATIE' => $o['locatie'],
-        'PAKKET' => $o['pakket'], 'REISKOSTEN' => $o['reiskosten'], 'TOTAAL' => $o['totaal'],
+        'PAKKET' => $o['pakket'], 'REISKOSTEN' => $o['reiskosten'], 'TOTAAL' => $o['totaal'] . (preg_match('/verlegd|reverse/i', (string)($o['btw'] ?? '')) ? bk_t($lang, ' (btw verlegd)', ' (VAT reverse-charged)') : ''),
         'AANBETALING' => $o['aanbetaling'], 'RESTBETALING' => $rest,
         'VOORSCHOT' => !empty($o['voorschot']) && $o['voorschot'] !== '-' ? $o['voorschot'] : bk_t($lang, 'Volgens offerte', 'As per quote'),
     ]) ?? lnc_mail_layout(bk_t($lang, 'Je boeking is bevestigd', 'Your booking is confirmed'),

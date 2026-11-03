@@ -10,6 +10,8 @@
     mail: 'Please enter a valid email address.', date: 'Please enter the date of your event.', range: 'Please choose a date between today and 3 years from now.', busy: 'Sending…', btn: 'Send my choice',
     fail: 'Sending failed. Please try again or email us at info@lanegra-entertainment.nl.', post: '../stuur-offerte.php',
     extras: ['Fire breather / Limbo show', 'Steel band 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2.5 hours'],
+    btwLbl: '9% VAT', verlegdLbl: 'VAT reverse-charged (0%)', totLbl: 'Total incl. VAT', totVerlegd: 'Total (VAT reverse-charged)', verlegdVal: '€ 0 (VAT reverse-charged)',
+    btwNr: function (n) { return 'Belgian VAT number: ' + n + '. '; },
     landen: { BE: 'Belgium', DE: 'Germany', LU: 'Luxembourg', FR: 'France', XX: 'abroad' },
     toeslag: function (land, b) { return 'Event in ' + land + ': 5% surcharge for performances abroad (' + b + ' excl. VAT) is included in the subtotal. '; }
   } : {
@@ -18,6 +20,8 @@
     mail: 'Vul een geldig e-mailadres in.', date: 'Vul de datum van je evenement in.', range: 'Kies een datum tussen vandaag en 3 jaar vooruit.', busy: 'Bezig met versturen…', btn: 'Keuze doorgeven',
     fail: 'Versturen lukte niet. Probeer het opnieuw of mail ons via info@lanegra-entertainment.nl.', post: 'stuur-offerte.php',
     extras: ['Vuurspuwer / Limboshow', 'Steelband 45 min', 'Latin Entertainment Band — 2x 45 min', 'DJ — 2,5 uur'],
+    btwLbl: '9% btw', verlegdLbl: 'Btw verlegd (0%)', totLbl: 'Totaal incl. btw', totVerlegd: 'Totaal (btw verlegd)', verlegdVal: '€ 0,- (btw verlegd)',
+    btwNr: function (n) { return 'Btw-nummer klant (België): ' + n + '. '; },
     landen: { BE: 'België', DE: 'Duitsland', LU: 'Luxemburg', FR: 'Frankrijk', XX: 'buitenland' },
     toeslag: function (land, b) { return 'Optreden in ' + land + ': 5% toeslag buitenland (' + b + ' excl. btw) zit in het subtotaal. '; }
   };
@@ -95,7 +99,8 @@
     c.acts = c.pakketPrijs + c.extrasPrijs + c.dansPrijs + c.pbPrijs + c.wsPrijs;
     c.toeslag = c.land !== 'NL' ? Math.round(c.acts * TOESLAG_BUITENLAND * 100) / 100 : 0;
     c.sub = c.acts + c.toeslag + c.reis;
-    c.btw = Math.round(c.sub * 9) / 100;                 // 9% btw, op de cent
+    c.verlegd = c.land === 'BE';                         // België: btw verlegd, dus geen btw op de factuur
+    c.btw = c.verlegd ? 0 : Math.round(c.sub * 9) / 100;   // 9% btw, op de cent
     c.totaal = Math.round((c.sub + c.btw) * 100) / 100;
     return c;
   }
@@ -118,6 +123,9 @@
     toonPrijzen(c.land !== 'NL' ? 1 + TOESLAG_BUITENLAND : 1);
     set('sum-sub', euro(c.sub));
     set('sum-btw', euro(c.btw));
+    if ($('lbl-btw')) set('lbl-btw', c.verlegd ? L.verlegdLbl : L.btwLbl);
+    if ($('lbl-total')) set('lbl-total', c.verlegd ? L.totVerlegd : L.totLbl);
+    var vb = $('veld-btwnr'); if (vb) vb.style.display = c.verlegd ? '' : 'none';
     set('sum-total', euro(c.totaal));
   }
 
@@ -166,10 +174,11 @@
     d.append('lang', EN ? 'en' : 'nl');
     var opm = val('f-opmerking') || '-';
     if (c.flags['extra-dj']) opm = L.djNote + (opm === '-' ? '' : opm);
+    if (c.verlegd && $('f-btwnr') && val('f-btwnr')) opm = L.btwNr(val('f-btwnr')) + (opm === '-' ? '' : opm);
     if (c.toeslag) opm = L.toeslag(landNaam, euro(c.toeslag)) + (opm === '-' ? '' : opm);
     d.append('opmerkingen', opm.trim() || '-');
     d.append('subtotaal_excl_btw', euro(c.sub));
-    d.append('btw_9pct', euro(c.btw));
+    d.append('btw_9pct', c.verlegd ? L.verlegdVal : euro(c.btw));
     d.append('totaal_incl_btw', euro(c.totaal));
     d.append('website', val('f-web'));                                   // lokveld voor bots
     d.append('t', String(Math.round((Date.now() - geladen) / 1000)));   // seconden op de pagina

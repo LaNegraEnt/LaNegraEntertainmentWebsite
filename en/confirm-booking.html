@@ -104,7 +104,7 @@
     row('Photo booth', q('photobooth')) + row('Comments', q('opmerking'));
   var right;
   if (/\d/.test(q('totaal'))) {
-    right = row('Travel costs', q('reiskosten')) + row('Subtotal excl. VAT', q('subtotaal')) + row('VAT (9%)', q('btw')) + row('Total incl. VAT', q('totaal'), true) +
+    right = row('Travel costs', q('reiskosten')) + row('Subtotal excl. VAT', q('subtotaal')) + row(/verlegd|reverse/i.test(q('btw')) ? 'VAT' : 'VAT (9%)', q('btw')) + row(/verlegd|reverse/i.test(q('btw')) ? 'Total (VAT reverse-charged)' : 'Total incl. VAT', q('totaal'), true) +
       row('Reservation deposit now', aanbetaling);
     // Payment in 3 parts (terms art. 8): € 50 now, top-up to 50% within 14 days, the balance after the event
     function eur(n) { return '€ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }

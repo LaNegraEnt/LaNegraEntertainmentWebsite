@@ -100,7 +100,7 @@
     row('Photobooth', q('photobooth')) + row('Opmerkingen', q('opmerking'));
   var right;
   if (/\d/.test(q('totaal'))) {
-    right = row('Reiskosten', q('reiskosten')) + row('Subtotaal excl. btw', q('subtotaal')) + row('Btw (9%)', q('btw')) + row('Totaal incl. btw', q('totaal'), true) +
+    right = row('Reiskosten', q('reiskosten')) + row('Subtotaal excl. btw', q('subtotaal')) + row(/verlegd/i.test(q('btw')) ? 'Btw' : 'Btw (9%)', q('btw')) + row(/verlegd/i.test(q('btw')) ? 'Totaal (btw verlegd)' : 'Totaal incl. btw', q('totaal'), true) +
       row('Reserveringsaanbetaling nu', aanbetaling);
     // Betalen in 3 delen (voorwaarden art. 8): € 50 nu, aanvulling tot 50% binnen 14 dagen, de rest na het optreden
     function eur(n) { return '€ ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }

@@ -82,7 +82,7 @@ $sent = lnc_mail(LNC_MAIL_TO, 'Nieuwe offerte: ' . $o['naam'] . ' – ' . $datum
 // ---------- Mail naar de klant (sjabloon opdracht-mail.html / opdracht-mail-en.html) ----------
 $vars = [
     'AANHEF' => bk_t($lang, 'Hoi ', 'Hi ') . bk_voornaam($o['naam']) . ',', 'NAAM' => $o['naam'], 'DATUM' => $datum, 'LOCATIE' => $o['locatie'],
-    'PAKKET' => $o['pakket'], 'REISKOSTEN' => $o['reiskosten'], 'TOTAAL' => $o['totaal'], 'OPDRACHT_LINK' => $link,
+    'PAKKET' => $o['pakket'], 'REISKOSTEN' => $o['reiskosten'], 'TOTAAL' => $o['totaal'] . (preg_match('/verlegd|reverse/i', $o['btw']) ? bk_t($lang, ' (btw verlegd)', ' (VAT reverse-charged)') : ''), 'OPDRACHT_LINK' => $link,
 ];
 $html = bk_template(bk_t($lang, 'opdracht-mail.html', 'opdracht-mail-en.html'), $vars) ?? lnc_mail_layout(bk_t($lang, 'Je opdrachtbevestiging staat klaar', 'Your booking confirmation is ready'),
     '<p>' . bk_t($lang, 'Hoi ', 'Hi ') . lnc_e(bk_voornaam($o['naam'])) . ',</p><p>' . bk_t($lang, 'Je opdrachtbevestiging staat klaar.', 'Your booking confirmation is ready.') . '</p>'

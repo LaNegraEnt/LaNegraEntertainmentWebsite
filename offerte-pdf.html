@@ -108,12 +108,14 @@ tr.tot td:first-child { border-radius: 2mm 0 0 2mm; } tr.tot td:last-child { bor
   document.getElementById('event').innerHTML = '<b>' + esc(q('datum') || 'Datum in overleg') + '</b>' + (q('locatie') ? '<br>' + esc(q('locatie')) : '');
   document.getElementById('pakket').textContent = [q('pakket'), q('extras') && q('extras') !== q('pakket') ? q('extras') : ''].filter(Boolean).join('\n\n') || 'Entertainment';
   var sub = num(q('subtotaal')), reis = num(q('reiskosten')), btw = num(q('btw')), tot = num(q('totaal'));
+  var verlegd = /verlegd|reverse/i.test(q('btw') || '');   // België: btw verlegd
+  if (verlegd) document.querySelector('.cta p').innerHTML = document.querySelector('.cta p').innerHTML.replace('Bedragen incl. 9% btw', 'Btw verlegd');
   var rows = '';
   if (!isNaN(sub)) rows += '<tr><td>Entertainment (excl. btw)</td><td>' + eur(sub) + '</td></tr>';
   if (!isNaN(reis)) rows += '<tr><td>Reiskosten (excl. btw)</td><td>' + eur(reis) + '</td></tr>';
   if (!isNaN(sub)) rows += '<tr><td>Subtotaal excl. btw</td><td>' + eur(sub + (isNaN(reis) ? 0 : reis)) + '</td></tr>';
-  if (!isNaN(btw)) rows += '<tr><td>Btw 9%</td><td>' + eur(btw) + '</td></tr>';
-  rows += '<tr class="tot"><td>Totaal incl. btw</td><td>' + (isNaN(tot) ? 'Volgens afspraak' : eur(tot)) + '</td></tr>';
+  if (!isNaN(btw)) rows += '<tr><td>' + (verlegd ? 'Btw verlegd' : 'Btw 9%') + '</td><td>' + eur(btw) + '</td></tr>';
+  rows += '<tr class="tot"><td>' + (verlegd ? 'Totaal (btw verlegd)' : 'Totaal incl. btw') + '</td><td>' + (isNaN(tot) ? 'Volgens afspraak' : eur(tot)) + '</td></tr>';
   document.getElementById('prijs').innerHTML = rows;
   var aan = num(q('aanbetaling')); if (isNaN(aan)) aan = 50;
   var pay = [['var(--tint)', 'Reserveringsaanbetaling', 'Bij akkoord, online. Hiermee ligt je datum vast.', eur(aan)]];
