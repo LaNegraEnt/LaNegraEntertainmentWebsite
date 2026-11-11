@@ -47,19 +47,24 @@ jobs:
       - name: lftp installeren en instellen
         # ftp:ssl-allow: gebruikt FTPS (TLS) als de server dat ondersteunt, anders gewone FTP.
         run: |
-          # Ubuntu-spiegels haperen soms: tot 3 keer proberen, een mislukte update stopt de install niet
+          # Ubuntu-spiegels haperen soms: tot 3 keer proberen, een mislukte update stopt de install niet.
+          # Foutmeldingen gaan als ::warning:: naar de samenvatting, zodat ze zonder inloggen te lezen zijn.
           for i in 1 2 3; do
-            sudo apt-get update -qq || true
-            sudo apt-get install -y -qq lftp && break
+            sudo apt-get update -qq > apt.log 2>&1 || echo "::warning::apt-get update poging $i: $(tail -c 600 apt.log | tr '\n' ' ')"
+            if sudo apt-get install -y -qq lftp > apt.log 2>&1; then break; fi
+            echo "::warning::apt-get install poging $i: $(tail -c 600 apt.log | tr '\n' ' ')"
             sleep 20
           done
           # Lukt apt niet, dan lftp uit conda-forge (Miniconda staat standaard op de runner)
           if ! command -v lftp >/dev/null; then
-            "$CONDA/bin/conda" install -y -q -p "$HOME/lftp-env" -c conda-forge lftp
-            echo "$HOME/lftp-env/bin" >> "$GITHUB_PATH"
-            export PATH="$HOME/lftp-env/bin:$PATH"
+            if "$CONDA/bin/conda" install -y -q -p "$HOME/lftp-env" -c conda-forge lftp > conda.log 2>&1; then
+              echo "$HOME/lftp-env/bin" >> "$GITHUB_PATH"
+              export PATH="$HOME/lftp-env/bin:$PATH"
+            else
+              echo "::warning::conda (CONDA=$CONDA): $(tail -c 600 conda.log | tr '\n' ' ')"
+            fi
           fi
-          lftp --version | head -1
+          command -v lftp || { echo "::error::lftp kon niet worden geinstalleerd"; exit 1; }
           cat > ~/.lftprc <<'EOF'
           set cmd:fail-exit yes
           set ftp:ssl-allow true
