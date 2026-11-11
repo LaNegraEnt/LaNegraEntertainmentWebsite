@@ -57,7 +57,7 @@ jobs:
           done
           # Lukt apt niet, dan lftp uit conda-forge (Miniconda staat standaard op de runner)
           if ! command -v lftp >/dev/null; then
-            if "$CONDA/bin/conda" install -y -q -p "$HOME/lftp-env" -c conda-forge lftp > conda.log 2>&1; then
+            if "$CONDA/bin/conda" create -y -q -p "$HOME/lftp-env" -c conda-forge --override-channels lftp > conda.log 2>&1; then
               echo "$HOME/lftp-env/bin" >> "$GITHUB_PATH"
               export PATH="$HOME/lftp-env/bin:$PATH"
             else
