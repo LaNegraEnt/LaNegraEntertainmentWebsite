@@ -47,7 +47,13 @@ jobs:
       - name: lftp installeren en instellen
         # ftp:ssl-allow: gebruikt FTPS (TLS) als de server dat ondersteunt, anders gewone FTP.
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          # Ubuntu-spiegels haperen soms: tot 3 keer proberen, een mislukte update stopt de install niet
+          for i in 1 2 3; do
+            sudo apt-get update -qq || true
+            sudo apt-get install -y -qq lftp && break
+            sleep 20
+          done
+          command -v lftp
           cat > ~/.lftprc <<'EOF'
           set cmd:fail-exit yes
           set ftp:ssl-allow true
