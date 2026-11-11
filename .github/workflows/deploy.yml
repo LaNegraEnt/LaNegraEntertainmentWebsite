@@ -53,7 +53,13 @@ jobs:
             sudo apt-get install -y -qq lftp && break
             sleep 20
           done
-          command -v lftp
+          # Lukt apt niet, dan lftp uit conda-forge (Miniconda staat standaard op de runner)
+          if ! command -v lftp >/dev/null; then
+            "$CONDA/bin/conda" install -y -q -p "$HOME/lftp-env" -c conda-forge lftp
+            echo "$HOME/lftp-env/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/lftp-env/bin:$PATH"
+          fi
+          lftp --version | head -1
           cat > ~/.lftprc <<'EOF'
           set cmd:fail-exit yes
           set ftp:ssl-allow true
