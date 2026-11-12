@@ -101,3 +101,18 @@
     });
   });
 })();
+
+/* Dienstpagina's: "Bekijk met geluid" zet de YouTube-video aan met geluid en start hem vanaf het begin */
+(function () {
+  var link = document.querySelector('a[href="#video"]');
+  var frame = document.querySelector('#video iframe');
+  if (!link || !frame) return;
+  function cmd(func, args) {
+    frame.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: args || [] }), '*');
+  }
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('video').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    cmd('unMute'); cmd('setVolume', [100]); cmd('seekTo', [0, true]); cmd('playVideo');
+  });
+})();
