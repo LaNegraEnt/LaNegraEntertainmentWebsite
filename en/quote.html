@@ -50,9 +50,8 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; <span>Quote</span></nav>
     <span class="kicker">Quote</span>
     <h1>Build your package</h1>
-    <p>Choose what you like, see a price indication straight away and send your choice without obligation. Prices exclude 9% VAT and travel costs. A 5% surcharge applies outside the Netherlands.</p>
+    <p>Choose what you like, see a price indication straight away and send your choice without obligation. Prices exclude 9% VAT and travel costs.</p>
     <div class="av-callout" style="max-width: 720px"><p><b>Something else in mind?</b> Is what you want not listed, or would you like a different combination? Email <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a> or call <a href="tel:+31625178050">+31 6 25 17 80 50</a> and we will send you a quote.</p></div>
-    <div class="av-callout" style="max-width: 720px"><p><b>Only want to book a samba dancer?</b> No band needed? <button type="button" class="btn btn-yellow btn-sm" id="snel-dans">Choose 1 dancer (€ 200)</button> You can still change the number afterwards.</p></div>
   </div>
 </section>
 <div class="wrap q-layout" id="offerte">
@@ -138,15 +137,5 @@
 <script src="../assets/js/site.js" defer></script>
 <script src="../lanegra-chat/lanegra-chat.js" data-ai-url="../lanegra-chat/ai-chat.php" defer></script>
 <script src="../assets/js/offerte.js" defer></script>
-<script>
-document.getElementById('snel-dans').addEventListener('click',function(){
-  var f=document.getElementById('offerte-form');
-  [['pakket','No brass band'],['danseressen','1']].forEach(function(p){
-    var r=f.querySelector('input[name="'+p[0]+'"][value="'+p[1]+'"]');
-    if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}));}
-  });
-  document.getElementById('stap4').scrollIntoView({behavior:'smooth',block:'center'});
-});
-</script>
 </body>
 </html>
