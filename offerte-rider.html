@@ -51,6 +51,7 @@
     <h1>Stel je pakket samen</h1>
     <p>Kies wat je wilt, zie direct een prijsindicatie en stuur je keuze vrijblijvend door. Prijzen zijn exclusief 9% btw en reiskosten. Buiten Nederland geldt 5% toeslag.</p>
     <div class="av-callout" style="max-width: 720px"><p><b>Iets anders in gedachten?</b> Staat jouw wens er niet tussen, of wil je een andere combinatie? Mail naar <a href="mailto:info@lanegra-entertainment.nl">info@lanegra-entertainment.nl</a> of bel <a href="tel:+31625178050">+31 6 25 17 80 50</a>, dan maken we een offerte.</p></div>
+    <div class="av-callout" style="max-width: 720px"><p><b>Alleen een samba danseres boeken?</b> Geen band nodig? <button type="button" class="btn btn-yellow btn-sm" id="snel-dans">Kies 1 danseres (€ 200,-)</button> Je kunt daarna nog het aantal aanpassen.</p></div>
   </div>
 </section>
 <div class="wrap q-layout" id="offerte">
@@ -135,5 +136,15 @@
 <script src="assets/js/site.js" defer></script>
 <script src="lanegra-chat/lanegra-chat.js" data-ai-url="lanegra-chat/ai-chat.php" defer></script>
 <script src="assets/js/offerte.js" defer></script>
+<script>
+document.getElementById('snel-dans').addEventListener('click',function(){
+  var f=document.getElementById('offerte-form');
+  [['pakket','Geen Brassband'],['danseressen','1']].forEach(function(p){
+    var r=f.querySelector('input[name="'+p[0]+'"][value="'+p[1]+'"]');
+    if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}));}
+  });
+  document.getElementById('stap4').scrollIntoView({behavior:'smooth',block:'center'});
+});
+</script>
 </body>
 </html>

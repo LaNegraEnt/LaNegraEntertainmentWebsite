@@ -127,57 +127,57 @@ if (LNC_SEND_AUTOREPLY) {
         'nl' => [
             'subject' => 'We hebben je aanvraag ontvangen – La Negra Entertainment',
             'hi' => 'Hoi', 'title' => 'Bedankt voor je aanvraag!',
-            'intro' => 'Je aanvraag is goed bij ons binnengekomen. Hieronder zie je wat je hebt doorgegeven.',
+            'intro' => 'Je aanvraag is goed bij ons binnengekomen. Hieronder zie je wat je hebt doorgegeven. Je betaalt nu nog niets: dat doe je pas als je akkoord geeft.',
             'card' => 'Jouw aanvraag',
             'labels' => ['Soort event', 'Act', 'Datum', 'Plaats', 'Gasten', 'Opmerking'],
             'next' => 'Wat gebeurt er nu?',
-            'steps' => ['Stel via de knop hieronder je offerte samen: kies je act en extra\'s en je ziet direct het totaalbedrag.', 'Je ontvangt je opdrachtbevestiging per mail. Klopt alles? Geef akkoord en betaal de aanbetaling van € 50,-.', 'Je datum staat definitief vast. Daarna: ¡fiesta!'],
+            'steps' => ['Klik op de gele knop hieronder. Kies je act (ook 1 samba danseres kan), zie direct het totaalbedrag en klik op "Keuze doorgeven". Dit is de stap waarmee je boekt.', 'Je ontvangt je opdrachtbevestiging per mail. Klopt alles? Geef akkoord en betaal de aanbetaling van € 50,-.', 'Je datum staat definitief vast. Daarna: ¡fiesta!'],
             'q' => 'Iets anders in gedachten, of staat jouw wens er niet tussen? Dan maken we graag een offerte. Mail naar', 'q_of' => 'of bel',
             'bye' => 'Muzikale groet,',
             'btn' => 'Bekijk onze acts',
-            'offerte' => 'Stel je offerte samen',
+            'offerte' => 'Boek hier: kies je act en prijs',
             'foot' => 'Je ontvangt deze mail omdat je een aanvraag deed op lanegra-entertainment.nl.',
         ],
         'en' => [
             'subject' => 'We have received your request – La Negra Entertainment',
             'hi' => 'Hi', 'title' => 'Thank you for your request!',
-            'intro' => 'Your request has reached us. Below is a summary of what you sent us.',
+            'intro' => 'Your request has reached us. Below is a summary of what you sent us. You do not pay anything yet: that only happens once you give your approval.',
             'card' => 'Your request',
             'labels' => ['Type of event', 'Act', 'Date', 'Location', 'Guests', 'Message'],
             'next' => 'What happens next?',
-            'steps' => ['Build your quote using the button below: choose your act and extras and see the total straight away.', 'You will receive your booking confirmation by email. All correct? Give your approval and pay the € 50 deposit.', 'Your date is confirmed. Then: ¡fiesta!'],
+            'steps' => ['Click the yellow button below. Choose your act (a single samba dancer is possible too), see the total straight away and click "Send my choice". This is the step that makes your booking.', 'You will receive your booking confirmation by email. All correct? Give your approval and pay the € 50 deposit.', 'Your date is confirmed. Then: ¡fiesta!'],
             'q' => 'Have something else in mind, or is what you want not listed? We are happy to send you a quote. Email', 'q_of' => 'or call',
             'bye' => 'Musical greetings,',
             'btn' => 'View our acts',
-            'offerte' => 'Build your quote',
+            'offerte' => 'Book here: choose your act and price',
             'foot' => 'You are receiving this email because you sent a request via lanegra-entertainment.nl.',
         ],
         'es' => [
             'subject' => 'Hemos recibido tu solicitud – La Negra Entertainment',
             'hi' => 'Hola', 'title' => '¡Gracias por tu solicitud!',
-            'intro' => 'Tu solicitud nos ha llegado correctamente. Aquí tienes un resumen de lo que nos enviaste.',
+            'intro' => 'Tu solicitud nos ha llegado correctamente. Aquí tienes un resumen de lo que nos enviaste. Todavía no pagas nada: eso solo ocurre cuando das tu aprobación.',
             'card' => 'Tu solicitud',
             'labels' => ['Tipo de evento', 'Acto', 'Fecha', 'Lugar', 'Invitados', 'Mensaje'],
             'next' => '¿Qué pasa ahora?',
-            'steps' => ['Crea tu presupuesto con el botón de abajo: elige tu acto y extras y verás el total al instante.', 'Recibirás la confirmación de tu reserva por correo. ¿Todo correcto? Da tu aprobación y paga el anticipo de 50 €.', 'Tu fecha queda confirmada. Y luego: ¡fiesta!'],
-            'q' => '¿Tienes otra idea o no encuentras lo que buscas? Te hacemos un presupuesto a medida. Escribe a', 'q_of' => 'o llama al',
+            'steps' => ['Haz clic en el botón amarillo de abajo. Elige tu acto (también puedes reservar una sola bailarina de samba), verás el total al instante y haz clic en "Send my choice". Con este paso haces tu reserva.', 'Recibirás la confirmación de tu reserva por correo. ¿Todo correcto? Da tu aprobación y paga el anticipo de 50 €.', 'Tu fecha queda confirmada. Y luego: ¡fiesta!'],
+            'q' => '¿Tienes otra idea o no encuentras lo que buscas? Te hacemos un presupuesto con gusto. Escribe a', 'q_of' => 'o llama al',
             'bye' => 'Un saludo musical,',
             'btn' => 'Ver nuestros actos',
-            'offerte' => 'Crea tu presupuesto',
+            'offerte' => 'Reserva aquí: elige tu acto y precio',
             'foot' => 'Recibes este correo porque enviaste una solicitud en lanegra-entertainment.nl.',
         ],
         'de' => [
             'subject' => 'Wir haben Ihre Anfrage erhalten – La Negra Entertainment',
             'hi' => 'Hallo', 'title' => 'Vielen Dank für Ihre Anfrage!',
-            'intro' => 'Ihre Anfrage ist bei uns eingegangen. Unten sehen Sie eine Übersicht Ihrer Angaben.',
+            'intro' => 'Ihre Anfrage ist bei uns eingegangen. Unten sehen Sie eine Übersicht Ihrer Angaben. Sie zahlen jetzt noch nichts: Das geschieht erst, wenn Sie Ihre Zustimmung geben.',
             'card' => 'Ihre Anfrage',
             'labels' => ['Art der Veranstaltung', 'Act', 'Datum', 'Ort', 'Gäste', 'Nachricht'],
             'next' => 'Wie geht es weiter?',
-            'steps' => ['Stellen Sie über den Button unten Ihr Angebot zusammen: Wählen Sie Act und Extras und Sie sehen sofort den Gesamtbetrag.', 'Sie erhalten Ihre Auftragsbestätigung per E-Mail. Stimmt alles? Geben Sie Ihre Zustimmung und zahlen Sie die Anzahlung von 50 €.', 'Ihr Termin steht fest. Und dann: ¡fiesta!'],
-            'q' => 'Haben Sie etwas anderes im Sinn oder ist Ihr Wunsch nicht dabei? Gern erstellen wir ein individuelles Angebot. Schreiben Sie an', 'q_of' => 'oder rufen Sie an:',
+            'steps' => ['Klicken Sie auf den gelben Button unten. Wählen Sie Ihren Act (auch eine einzelne Sambatänzerin ist möglich), Sie sehen sofort den Gesamtbetrag, und klicken Sie auf "Send my choice". Mit diesem Schritt buchen Sie.', 'Sie erhalten Ihre Auftragsbestätigung per E-Mail. Stimmt alles? Geben Sie Ihre Zustimmung und zahlen Sie die Anzahlung von 50 €.', 'Ihr Termin steht fest. Und dann: ¡fiesta!'],
+            'q' => 'Haben Sie etwas anderes im Sinn oder ist Ihr Wunsch nicht dabei? Gern erstellen wir Ihnen ein Angebot. Schreiben Sie an', 'q_of' => 'oder rufen Sie an:',
             'bye' => 'Musikalische Grüße,',
             'btn' => 'Unsere Acts ansehen',
-            'offerte' => 'Angebot zusammenstellen',
+            'offerte' => 'Hier buchen: Act und Preis wählen',
             'foot' => 'Sie erhalten diese E-Mail, weil Sie eine Anfrage über lanegra-entertainment.nl gesendet haben.',
         ],
     ];
@@ -185,6 +185,9 @@ if (LNC_SEND_AUTOREPLY) {
     $t = $T[$lang] ?? $T['nl'];
     $voornaam = explode(' ', $f['Naam'])[0];
     $actsUrl = LNC_SITE . '/' . (in_array($lang, ['en', 'es', 'de'], true) ? $lang . '/' : '') . 'index.html#acts';
+    // Offertepagina in de taal van de klant; Duitse klanten krijgen Duitsland vooraf ingevuld (5% toeslag buitenland)
+    $offertePad = ['en' => '/en/quote.html', 'es' => '/en/quote.html', 'de' => '/en/quote.html?land=DE'];
+    $offerteUrl = LNC_SITE . ($offertePad[$lang] ?? '/offerte-rider.html');
 
     $stappen = '';
     foreach ($t['steps'] as $i => $stap) {
@@ -203,7 +206,7 @@ if (LNC_SEND_AUTOREPLY) {
           . lnc_mail_card($t['card'], $kaart)
           . '<div style="font-size:18px;font-weight:bold;margin:8px 0 6px">' . lnc_e($t['next']) . '</div>'
           . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px">' . $stappen . '</table>'
-          . '<div style="margin:0 0 20px">' . lnc_mail_button(LNC_SITE . '/offerte-rider.html', $t['offerte'], true) . lnc_mail_button($actsUrl, $t['btn'], false) . '</div>'
+          . '<div style="margin:0 0 20px">' . lnc_mail_button($offerteUrl, $t['offerte'], true) . lnc_mail_button($actsUrl, $t['btn'], false) . '</div>'
           . '<p style="font-size:15px;line-height:1.6;margin:0 0 18px;padding:12px 14px;background:#FBF8F1;border-radius:10px">' . lnc_e($t['q'])
           . ' <a href="mailto:' . LNC_MAIL_TO . '" style="color:#D74B27;font-weight:bold;text-decoration:none">' . LNC_MAIL_TO . '</a> ' . lnc_e($t['q_of'])
           . ' <a href="tel:+31625178050" style="color:#D74B27;font-weight:bold;text-decoration:none">' . LNC_PHONE . '</a>.</p>'
@@ -219,7 +222,7 @@ if (LNC_SEND_AUTOREPLY) {
     foreach ($t['labels'] as $i => $label) if ($waarden[$i] !== '') $text .= $label . ': ' . $waarden[$i] . "\n";
     $text .= "\n" . $t['next'] . "\n";
     foreach ($t['steps'] as $i => $stap) $text .= ($i + 1) . '. ' . $stap . "\n";
-    $text .= "\n" . $t['offerte'] . ': ' . LNC_SITE . "/offerte-rider.html\n";
+    $text .= "\n" . $t['offerte'] . "\n" . $offerteUrl . "\n";
     $text .= "\n" . $t['q'] . ' ' . LNC_MAIL_TO . ' ' . $t['q_of'] . ' ' . LNC_PHONE . ".\n\n" . $t['bye'] . "\nLa Negra Entertainment\n" . LNC_SITE . "\n";
 
     lnc_mail($f['E-mail'], $t['subject'], lnc_mail_layout($t['title'], $body, $footer), $text, LNC_MAIL_TO);
